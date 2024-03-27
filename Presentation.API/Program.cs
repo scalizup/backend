@@ -1,0 +1,46 @@
+using Domain;
+using Infra;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(t =>
+    {
+        if (t.FullName!.Contains("Command") || t.FullName!.Contains("Query") || t.FullName!.Contains("Dto"))
+        {
+            var rawName = t.FullName.Split("+");
+            var lastPart = rawName[0].Split(".").Last();
+
+            return $"{lastPart}.{rawName[1]}";
+        }
+
+        return t.FullName;
+    });
+});
+builder.Services
+    .AddDomain()
+    .AddInfra(builder.Configuration);
+
+builder.Services.AddCors();
+
+builder.Services.AddControllers();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors(policyBuilder => policyBuilder
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyHeader());
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapControllers();
+
+app.UseHttpsRedirection();
+app.Run();
+
