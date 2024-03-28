@@ -60,7 +60,7 @@ namespace Infra.Migrations
 
                     b.HasIndex("TenantId");
 
-                    b.ToTable("TagGroup");
+                    b.ToTable("TagGroups");
                 });
 
             modelBuilder.Entity("Domain.Entities.Tenant", b =>

@@ -1,5 +1,7 @@
 ﻿using System.Net.Mime;
 using Domain.UseCases.Tenant;
+using Domain.UseCases.Tenant.Commands;
+using Domain.UseCases.Tenant.Queries;
 using Domain.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +37,7 @@ public class TenantController(ISender mediator) : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PageQueryResponse<GetAllTenants.TenantDto>))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<IEnumerable<GetAllTenants.TenantDto>>> GetAllTenants(
+    public async Task<ActionResult<PageQueryResponse<GetAllTenants.TenantDto>>> GetAllTenants(
         [FromQuery] PageQuery pageQuery)
     {
         var tenants = await mediator.Send(new GetAllTenants.Query(pageQuery));

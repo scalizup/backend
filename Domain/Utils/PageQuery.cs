@@ -1,26 +1,34 @@
 ﻿namespace Domain.Utils;
 
-public record PageQuery
+public class PageQuery
 {
-    public PageQuery(
-        int pageNumber = 1,
-        int pageSize = 10)
+    private int _pageNumber;
+    public required int PageNumber
     {
-        if (pageNumber < 1)
+        get => _pageNumber;
+        set
         {
-            throw new InvalidPageNumberException();
-        }
+            if (value < 1)
+            {
+                throw new InvalidPageNumberException();
+            }
 
-        if (pageSize < 1)
-        {
-            throw new InvalidPageSizeException();
+            _pageNumber = value;
         }
-        
-        PageNumber = pageNumber;
-        PageSize = pageSize;
     }
 
-    public int PageNumber { get; }
+    private int _pageSize;
+    public required int PageSize
+    {
+        get => _pageSize;
+        set
+        {
+            if (value < 1)
+            {
+                throw new InvalidPageSizeException();
+            }
 
-    public int PageSize { get; }
+            _pageSize = value;
+        }
+    }
 }

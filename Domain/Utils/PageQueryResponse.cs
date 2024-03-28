@@ -22,7 +22,11 @@ public class PageQueryResponse<TEntity>(int totalItems, PageQuery pageQuery, IEn
     {
         return new PageQueryResponse<TEntityDto>(
             TotalItems,
-            new PageQuery(CurrentPage, pageQuery.PageSize),
+            new PageQuery
+            {
+                PageNumber = CurrentPage,
+                PageSize =  pageQuery.PageSize
+            },
             Items.Select(func));
     }
 }

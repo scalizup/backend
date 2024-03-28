@@ -8,6 +8,7 @@ C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\Infra.GeneratedMSBu
 C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\Infra.AssemblyInfoInputs.cache
 C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\Infra.AssemblyInfo.cs
 C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\Infra.csproj.CoreCompileInputs.cache
+C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\Infra.sourcelink.json
 C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\Infra.csproj.CopyComplete
 C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\Infra.dll
 C:\Users\xevsc\RiderProjects\scalizup\Infra\obj\Debug\net8.0\refint\Infra.dll
