@@ -12,6 +12,7 @@ public abstract class BaseIntegrationTest
     private static IServiceProvider _serviceProvider = null!;
 
     protected static ITenantRepository TenantRepository => GetService<ITenantRepository>();
+    protected static ITagGroupRepository TagGroupRepository => GetService<ITagGroupRepository>();
 
     [AssemblyInitialize]
     public static void AssemblyInitialize(TestContext testContext)
@@ -42,7 +43,22 @@ public abstract class BaseIntegrationTest
         var context = GetService<AppDbContext>();
         
         context.Tenants.RemoveRange(context.Tenants);
+        context.TagGroups.RemoveRange(context.TagGroups);
         
         await context.SaveChangesAsync();
+    }
+}
+
+[TestClass] 
+public abstract class TenantAwareIntegrationTest : BaseIntegrationTest
+{
+    protected int TenantId { get; private set; }
+
+    [TestInitialize]
+    public async Task<int> CreateTenant(string name = "Restaurant 1")
+    {
+        TenantId = await TenantRepository.CreateTenant(name, default);
+        
+        return TenantId;
     }
 }

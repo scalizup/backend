@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    
     options.CustomSchemaIds(t =>
     {
         if (t.FullName!.Contains("Command") || t.FullName!.Contains("Query") || t.FullName!.Contains("Dto"))
@@ -18,6 +19,8 @@ builder.Services.AddSwaggerGen(options =>
 
         return t.FullName;
     });
+
+    options.SupportNonNullableReferenceTypes();
 });
 builder.Services
     .AddDomain()

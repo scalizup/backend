@@ -25,4 +25,10 @@
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="UseCases\TagGroup\Commands\" />
+      <Folder Include="UseCases\Tenant\Commands\" />
+      <Folder Include="UseCases\Tenant\Queries\" />
+    </ItemGroup>
+
 </Project>

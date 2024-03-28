@@ -3,7 +3,8 @@
 namespace Domain.Entities;
 
 public class Tag(
-    string name) : TenantAware
+    int tenantId,
+    string name) : TenantAware(tenantId)
 {
     public string Name { get; set; } = name;
     
