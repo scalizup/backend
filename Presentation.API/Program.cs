@@ -14,6 +14,11 @@ builder.Services.AddSwaggerGen(options =>
             var rawName = t.FullName.Split("+");
             var lastPart = rawName[0].Split(".").Last();
 
+            if (rawName[0].Contains("PageQueryResponse"))
+            {
+                return $"{lastPart}.Paginated";
+            }
+
             return $"{lastPart}.{rawName[1]}";
         }
 

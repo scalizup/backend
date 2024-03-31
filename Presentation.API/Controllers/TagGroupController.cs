@@ -4,7 +4,6 @@ using Domain.UseCases.TagGroup.Queries;
 using Domain.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using GetAllTags = Domain.UseCases.Tag.Queries.GetAllTags;
 
 namespace Presentation.API.Controllers;
 
@@ -24,6 +23,17 @@ public class TagGroupController(ISender mediator) : ControllerBase
         {
             StatusCode = StatusCodes.Status201Created
         };
+    }
+    
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTagGroupById.TagGroupDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<GetTagGroupById.TagGroupDto>> GetTagGroupById([FromRoute] int id)
+    {
+        var tagGroup = await mediator.Send(new GetTagGroupById.Query(id));
+
+        return Ok(tagGroup);
     }
 
     [HttpGet]
