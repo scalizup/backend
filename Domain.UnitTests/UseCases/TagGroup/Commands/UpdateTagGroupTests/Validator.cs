@@ -1,5 +1,4 @@
-﻿using Domain.UseCases.TagGroup;
-using Domain.UseCases.TagGroup.Commands;
+﻿using Domain.UseCases.TagGroup.Commands;
 
 namespace Domain.UnitTests.UseCases.TagGroup.Commands.UpdateTagGroupTests;
 
@@ -32,7 +31,7 @@ public class Validator
     }
     
     [TestMethod]
-    public async Task Name_EmptyNameAndMinimumLength()
+    public async Task Name_WhenNotNull_NotEmptyAndMinimumLength()
     {
         // Arrange
         var command = new UpdateTagGroup.Command(1, "");

@@ -1,7 +1,7 @@
 ﻿using Domain.UseCases.TagGroup.Commands;
 using FluentAssertions;
 
-namespace Domain.IntegrationTests.UseCases.TagGroups.Commands;
+namespace Domain.IntegrationTests.UseCases.TagGroup.Commands;
 
 [TestClass]
 public class CreateTagGroupTests : TenantAwareIntegrationTest

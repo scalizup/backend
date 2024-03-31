@@ -1,12 +1,10 @@
 ﻿using System.Net.Mime;
 using Domain.UseCases.TagGroup.Commands;
 using Domain.UseCases.TagGroup.Queries;
-using Domain.UseCases.Tenant;
-using Domain.UseCases.Tenant.Commands;
-using Domain.UseCases.Tenant.Queries;
 using Domain.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using GetAllTags = Domain.UseCases.Tag.Queries.GetAllTags;
 
 namespace Presentation.API.Controllers;
 
@@ -55,7 +53,7 @@ public class TagGroupController(ISender mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> DeleteTenant([FromRoute] int id)
+    public async Task<ActionResult> DeleteTagGroup([FromRoute] int id)
     {
         await mediator.Send(new DeleteTagGroup.Command(id));
 

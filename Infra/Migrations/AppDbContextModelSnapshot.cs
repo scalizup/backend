@@ -33,12 +33,17 @@ namespace Infra.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("TagGroupId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag");
+                    b.HasIndex("TagGroupId");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Domain.Entities.TagGroup", b =>
@@ -83,19 +88,15 @@ namespace Infra.Migrations
                     b.ToTable("Tenants");
                 });
 
-            modelBuilder.Entity("TagTagGroup", b =>
+            modelBuilder.Entity("Domain.Entities.Tag", b =>
                 {
-                    b.Property<int>("TagGroupsId")
-                        .HasColumnType("integer");
+                    b.HasOne("Domain.Entities.TagGroup", "TagGroup")
+                        .WithMany("Tags")
+                        .HasForeignKey("TagGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("TagsId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("TagGroupsId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("TagTagGroup");
+                    b.Navigation("TagGroup");
                 });
 
             modelBuilder.Entity("Domain.Entities.TagGroup", b =>
@@ -107,19 +108,9 @@ namespace Infra.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TagTagGroup", b =>
+            modelBuilder.Entity("Domain.Entities.TagGroup", b =>
                 {
-                    b.HasOne("Domain.Entities.TagGroup", null)
-                        .WithMany()
-                        .HasForeignKey("TagGroupsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Domain.Entities.Tenant", b =>

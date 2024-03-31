@@ -1,6 +1,5 @@
 ﻿using Domain.Exceptions;
 using Domain.Repositories;
-using Domain.UseCases.Tenant;
 using Domain.UseCases.Tenant.Queries;
 using NSubstitute;
 

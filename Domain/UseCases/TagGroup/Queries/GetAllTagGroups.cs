@@ -1,6 +1,4 @@
-﻿using Domain.Utils;
-
-namespace Domain.UseCases.TagGroup.Queries;
+﻿namespace Domain.UseCases.TagGroup.Queries;
 
 public static class GetAllTagGroups
 {

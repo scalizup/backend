@@ -1,8 +1,7 @@
-﻿using Domain.Entities;
-using Domain.UseCases.TagGroup.Commands;
+﻿using Domain.UseCases.TagGroup.Commands;
 using FluentAssertions;
 
-namespace Domain.IntegrationTests.UseCases.TagGroups.Commands;
+namespace Domain.IntegrationTests.UseCases.TagGroup.Commands;
 
 [TestClass]
 public class UpdateTagGroupTests : TenantAwareIntegrationTest
@@ -10,10 +9,10 @@ public class UpdateTagGroupTests : TenantAwareIntegrationTest
     private readonly UpdateTagGroup.Handler _handler = new(TagGroupRepository);
 
     [TestMethod]
-    public async Task UpdatesName()
+    public async Task Update_Name()
     {
         // Arrange
-        var expectedUpdatedTagGroup = new TagGroup(TenantId, "Ingredients");
+        var expectedUpdatedTagGroup = new Entities.TagGroup(TenantId, "Ingredients");
         await TagGroupRepository.CreateTagGroup(expectedUpdatedTagGroup, default);
 
         var command = new UpdateTagGroup.Command(expectedUpdatedTagGroup.Id, "Tools");

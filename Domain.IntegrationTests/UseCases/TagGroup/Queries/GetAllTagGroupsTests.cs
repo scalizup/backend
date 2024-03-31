@@ -1,9 +1,8 @@
-﻿using Domain.Entities;
-using Domain.UseCases.TagGroup.Queries;
+﻿using Domain.UseCases.TagGroup.Queries;
 using Domain.Utils;
 using FluentAssertions;
 
-namespace Domain.IntegrationTests.UseCases.TagGroups.Queries;
+namespace Domain.IntegrationTests.UseCases.TagGroup.Queries;
 
 [TestClass]
 public class GetAllTagGroupsTests : TenantAwareIntegrationTest
@@ -20,7 +19,7 @@ public class GetAllTagGroupsTests : TenantAwareIntegrationTest
     public async Task Success()
     {
         // Arrange
-        await TagGroupRepository.CreateTagGroup(new TagGroup(TenantId, "Tools"), default);
+        await TagGroupRepository.CreateTagGroup(new Entities.TagGroup(TenantId, "Tools"), default);
 
         var command = new GetAllTagGroups.Query(TenantId, _pageQuery);
 
@@ -40,10 +39,10 @@ public class GetAllTagGroupsTests : TenantAwareIntegrationTest
     public async Task TenantIdFilter()
     {
         // Arrange
-        await TagGroupRepository.CreateTagGroup(new TagGroup(TenantId, "Tools"), default);
+        await TagGroupRepository.CreateTagGroup(new Entities.TagGroup(TenantId, "Tools"), default);
         
         var defaultTenantIdCommand = new GetAllTagGroups.Query(TenantId, _pageQuery);
-        var differentTenantIdCommand = new GetAllTagGroups.Query(await CreateTenant("Different Tenant"), _pageQuery);
+        var differentTenantIdCommand = new GetAllTagGroups.Query(await CreateTenant("Restaurant 2"), _pageQuery);
 
         // Act
         var handlerResult = new
@@ -52,23 +51,22 @@ public class GetAllTagGroupsTests : TenantAwareIntegrationTest
             differentTenantId = await _handler.Handle(differentTenantIdCommand, default),
         };
 
-        
         // Assert
         // Empty result for different tenant id
         handlerResult.defaultTenantId.TotalPages.Should().Be(1);
         handlerResult.defaultTenantId.CurrentPage.Should().Be(1);
         handlerResult.defaultTenantId.PageSize.Should().Be(_pageQuery.PageSize);
         handlerResult.defaultTenantId.CurrentPage.Should().Be(_pageQuery.PageNumber);
-        handlerResult.defaultTenantId.TotalItems.Should().Be(0);
-        handlerResult.defaultTenantId.Items.Should().HaveCount(0);
+        handlerResult.defaultTenantId.TotalItems.Should().Be(1);
+        handlerResult.defaultTenantId.Items.Should().HaveCount(1);
         
         // Filled result for default tenant id
-        handlerResult.differentTenantId.TotalPages.Should().Be(1);
+        handlerResult.differentTenantId.TotalPages.Should().Be(0);
         handlerResult.differentTenantId.CurrentPage.Should().Be(1);
         handlerResult.differentTenantId.PageSize.Should().Be(_pageQuery.PageSize);
         handlerResult.differentTenantId.CurrentPage.Should().Be(_pageQuery.PageNumber);
-        handlerResult.differentTenantId.TotalItems.Should().Be(1);
-        handlerResult.differentTenantId.Items.Should().HaveCount(1);
+        handlerResult.differentTenantId.TotalItems.Should().Be(0);
+        handlerResult.differentTenantId.Items.Should().HaveCount(0);
     }
 
     [TestMethod]

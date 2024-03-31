@@ -8,4 +8,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Tenant> Tenants { get; set; } = default!;
     
     public DbSet<TagGroup> TagGroups { get; set; } = default!;
+    
+    public DbSet<Tag> Tags { get; set; } = default!;
 }

@@ -1,5 +1,4 @@
 ﻿using System.Net.Mime;
-using Domain.UseCases.Tenant;
 using Domain.UseCases.Tenant.Commands;
 using Domain.UseCases.Tenant.Queries;
 using Domain.Utils;
