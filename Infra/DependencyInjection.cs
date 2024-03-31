@@ -17,7 +17,8 @@ public static class DependencyInjection
 
         services
             .AddScoped<ITenantRepository, TenantRepository>()
-            .AddScoped<ITagGroupRepository, TagGroupRepository>();
+            .AddScoped<ITagGroupRepository, TagGroupRepository>()
+            .AddScoped<ITagRepository, TagRepository>();
 
         return services;
     }

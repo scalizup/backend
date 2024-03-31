@@ -1,9 +1,6 @@
 ﻿using System.Net.Mime;
 using Domain.UseCases.TagGroup.Commands;
 using Domain.UseCases.TagGroup.Queries;
-using Domain.UseCases.Tenant;
-using Domain.UseCases.Tenant.Commands;
-using Domain.UseCases.Tenant.Queries;
 using Domain.Utils;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +23,17 @@ public class TagGroupController(ISender mediator) : ControllerBase
         {
             StatusCode = StatusCodes.Status201Created
         };
+    }
+    
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTagGroupById.TagGroupDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<GetTagGroupById.TagGroupDto>> GetTagGroupById([FromRoute] int id)
+    {
+        var tagGroup = await mediator.Send(new GetTagGroupById.Query(id));
+
+        return Ok(tagGroup);
     }
 
     [HttpGet]
@@ -55,7 +63,7 @@ public class TagGroupController(ISender mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult> DeleteTenant([FromRoute] int id)
+    public async Task<ActionResult> DeleteTagGroup([FromRoute] int id)
     {
         await mediator.Send(new DeleteTagGroup.Command(id));
 

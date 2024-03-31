@@ -1,8 +1,7 @@
-﻿using Domain.Entities;
-using Domain.UseCases.Tenant.Commands;
+﻿using Domain.UseCases.Tenant.Commands;
 using FluentAssertions;
 
-namespace Domain.IntegrationTests.UseCases.Tenants.Commands;
+namespace Domain.IntegrationTests.UseCases.Tenant.Commands;
 
 [TestClass]
 public class UpdateTenantTests : BaseIntegrationTest
@@ -10,10 +9,10 @@ public class UpdateTenantTests : BaseIntegrationTest
     private readonly UpdateTenant.Handler _handler = new(TenantRepository);
 
     [TestMethod]
-    public async Task UpdatesName()
+    public async Task Update_Name()
     {
         // Arrange
-        var expectedUpdatedTenant = new Tenant("Restaurant 2")
+        var expectedUpdatedTenant = new Entities.Tenant("Restaurant 2")
         {
             IsActive = false
         };
@@ -39,7 +38,7 @@ public class UpdateTenantTests : BaseIntegrationTest
     public async Task UpdatesIsActive()
     {
         // Arrange
-        var expectedUpdatedTenant = new Tenant("Restaurant 1")
+        var expectedUpdatedTenant = new Entities.Tenant("Restaurant 1")
         {
             IsActive = true
         };

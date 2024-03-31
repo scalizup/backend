@@ -1,7 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Utils;
-
-namespace Domain.Repositories;
+﻿namespace Domain.Repositories;
 
 public interface ITenantRepository
 {

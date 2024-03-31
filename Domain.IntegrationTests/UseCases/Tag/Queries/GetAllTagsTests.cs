@@ -1,27 +1,28 @@
-﻿using Domain.UseCases.Tenant.Queries;
+﻿using Domain.UseCases.Tag.Queries;
 using Domain.Utils;
 using FluentAssertions;
 
-namespace Domain.IntegrationTests.UseCases.Tenants.Queries;
+namespace Domain.IntegrationTests.UseCases.Tag.Queries;
 
 [TestClass]
-public class GetAllTenantTests : BaseIntegrationTest
+public class GetAllTagsTests : TenantAwareIntegrationTest
 {
-    private readonly GetAllTenants.Handler _handler = new(TenantRepository);
+    private readonly GetAllTags.Handler _handler = new(TagRepository);
 
-    private PageQuery _pageQuery = new()
+    private readonly PageQuery _pageQuery = new()
     {
         PageNumber = 1,
         PageSize = 10
     };
-    
+
     [TestMethod]
     public async Task Success()
     {
         // Arrange
-        await TenantRepository.CreateTenant("Tenant 1", default);
-       
-        var command = new GetAllTenants.Query(_pageQuery);
+        var tagGroupId = await TagGroupRepository.CreateTagGroup(new Entities.TagGroup(TenantId, "Tools"), default);
+        await TagRepository.CreateTag(new Entities.Tag(TenantId, tagGroupId, "Hammer"), default);
+
+        var command = new GetAllTags.Query(tagGroupId, _pageQuery);
 
         // Act
         var handlerResult = await _handler.Handle(command, default);
@@ -39,7 +40,7 @@ public class GetAllTenantTests : BaseIntegrationTest
     public async Task Empty()
     {
         // Arrange
-        var command = new GetAllTenants.Query(_pageQuery);
+        var command = new GetAllTags.Query(TenantId, _pageQuery);
 
         // Act
         var handlerResult = await _handler.Handle(command, default);

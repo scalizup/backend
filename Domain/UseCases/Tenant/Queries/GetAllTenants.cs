@@ -1,6 +1,4 @@
-﻿using Domain.Utils;
-
-namespace Domain.UseCases.Tenant.Queries;
+﻿namespace Domain.UseCases.Tenant.Queries;
 
 public static class GetAllTenants
 {

@@ -1,6 +1,5 @@
 ﻿using Domain.Repositories;
 using Infra;
-using Infra.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +12,8 @@ public abstract class BaseIntegrationTest
 
     protected static ITenantRepository TenantRepository => GetService<ITenantRepository>();
     protected static ITagGroupRepository TagGroupRepository => GetService<ITagGroupRepository>();
+    protected static ITagRepository TagRepository => GetService<ITagRepository>();
+
 
     [AssemblyInitialize]
     public static void AssemblyInitialize(TestContext testContext)
@@ -44,21 +45,8 @@ public abstract class BaseIntegrationTest
         
         context.Tenants.RemoveRange(context.Tenants);
         context.TagGroups.RemoveRange(context.TagGroups);
+        context.Tags.RemoveRange(context.Tags);
         
         await context.SaveChangesAsync();
-    }
-}
-
-[TestClass] 
-public abstract class TenantAwareIntegrationTest : BaseIntegrationTest
-{
-    protected int TenantId { get; private set; }
-
-    [TestInitialize]
-    public async Task<int> CreateTenant(string name = "Restaurant 1")
-    {
-        TenantId = await TenantRepository.CreateTenant(name, default);
-        
-        return TenantId;
     }
 }

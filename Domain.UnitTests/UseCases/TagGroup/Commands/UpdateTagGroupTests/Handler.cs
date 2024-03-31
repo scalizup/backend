@@ -1,6 +1,5 @@
 ﻿using Domain.Exceptions;
 using Domain.Repositories;
-using Domain.UseCases.TagGroup;
 using Domain.UseCases.TagGroup.Commands;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
@@ -23,7 +22,7 @@ public class Handler
     }
 
     [TestMethod]
-    public async Task UpdateNotExistingTenant_Throws()
+    public async Task UpdateNotExistingTagGroup_Throws()
     {
         // Arrange
         var command = new UpdateTagGroup.Command(0, null);

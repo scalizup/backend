@@ -1,5 +1,4 @@
-﻿using Domain.UseCases.Tenant;
-using Domain.UseCases.Tenant.Commands;
+﻿using Domain.UseCases.Tenant.Commands;
 
 namespace Domain.UnitTests.UseCases.Tenant.Commands.UpdateTenantTests;
 

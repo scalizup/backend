@@ -1,5 +1,4 @@
-﻿using Domain.UseCases.TagGroup;
-using Domain.UseCases.TagGroup.Commands;
+﻿using Domain.UseCases.TagGroup.Commands;
 
 namespace Domain.UnitTests.UseCases.TagGroup.Commands.DeleteTagGroupTests;
 

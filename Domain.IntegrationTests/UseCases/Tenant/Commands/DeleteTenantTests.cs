@@ -1,8 +1,7 @@
-﻿using Domain.Exceptions;
-using Domain.UseCases.Tenant.Commands;
+﻿using Domain.UseCases.Tenant.Commands;
 using FluentAssertions;
 
-namespace Domain.IntegrationTests.UseCases.Tenants.Commands;
+namespace Domain.IntegrationTests.UseCases.Tenant.Commands;
 
 [TestClass]
 public class DeleteTenantTests : BaseIntegrationTest
