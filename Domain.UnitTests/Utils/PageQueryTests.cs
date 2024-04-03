@@ -1,5 +1,5 @@
-﻿using Domain.Exceptions;
-using Domain.Utils;
+﻿using Application.Common.Exceptions;
+using Application.Models;
 
 namespace Domain.UnitTests.Utils;
 

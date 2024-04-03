@@ -1,4 +1,4 @@
-﻿using Domain.UseCases.TagGroup.Commands;
+﻿using Application.TagGroups.Commands;
 
 namespace Domain.UnitTests.UseCases.TagGroup.Commands.UpdateTagGroupTests;
 

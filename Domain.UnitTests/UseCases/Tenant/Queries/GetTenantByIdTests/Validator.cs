@@ -1,4 +1,4 @@
-﻿using Domain.UseCases.Tenant.Queries;
+﻿using Application.Tenants.Queries;
 
 namespace Domain.UnitTests.UseCases.Tenant.Queries.GetTenantByIdTests;
 

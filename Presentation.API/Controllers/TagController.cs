@@ -1,9 +1,9 @@
 ﻿using System.Net.Mime;
-using Domain.UseCases.Tag.Commands;
-using Domain.Utils;
+using Application.Models;
+using Application.Tags.Commands;
+using Application.Tags.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using GetAllTags = Domain.UseCases.Tag.Queries.GetAllTags;
 
 namespace Presentation.API.Controllers;
 

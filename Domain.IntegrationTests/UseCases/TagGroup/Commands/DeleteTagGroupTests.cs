@@ -1,5 +1,4 @@
-﻿using Domain.UseCases.TagGroup.Commands;
-using FluentAssertions;
+﻿using Application.TagGroups.Commands;
 
 namespace Domain.IntegrationTests.UseCases.TagGroup.Commands;
 

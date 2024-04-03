@@ -1,5 +1,4 @@
-﻿using Domain.UseCases.Tag.Commands;
-using FluentAssertions;
+﻿using Application.Tags.Commands;
 
 namespace Domain.IntegrationTests.UseCases.Tag.Commands;
 

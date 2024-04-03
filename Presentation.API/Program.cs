@@ -1,12 +1,14 @@
-using Domain;
+using Application;
+using Application.Common.Interfaces;
 using Infra;
+using Infra.Identity;
+using Presentation.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    
     options.CustomSchemaIds(t =>
     {
         if (t.FullName!.Contains("Command") || t.FullName!.Contains("Query") || t.FullName!.Contains("Dto"))
@@ -27,13 +29,16 @@ builder.Services.AddSwaggerGen(options =>
 
     options.SupportNonNullableReferenceTypes();
 });
+
 builder.Services
-    .AddDomain()
+    .AddApplicationServices()
     .AddInfra(builder.Configuration);
 
 builder.Services.AddCors();
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IUser, CurrentUser>();
 
 var app = builder.Build();
 
@@ -43,12 +48,18 @@ if (app.Environment.IsDevelopment())
         .AllowAnyOrigin()
         .AllowAnyHeader()
         .AllowAnyHeader());
-    app.UseSwagger();
-    app.UseSwaggerUI();
+
+    app
+        .UseSwagger()
+        .UseSwaggerUI();
 }
+
+app
+    .MapGroup("/api/users")
+    .MapIdentityApi<ApplicationUser>()
+    .WithTags("Users");
 
 app.MapControllers();
 
 app.UseHttpsRedirection();
 app.Run();
-

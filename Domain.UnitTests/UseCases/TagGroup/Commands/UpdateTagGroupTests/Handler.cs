@@ -1,6 +1,6 @@
-﻿using Domain.Exceptions;
-using Domain.Repositories;
-using Domain.UseCases.TagGroup.Commands;
+﻿using Application.Common.Exceptions;
+using Application.Repositories;
+using Application.TagGroups.Commands;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 

@@ -1,11 +1,12 @@
-﻿using Domain.Repositories;
+﻿using Application;
+using Application.Repositories;
 using Infra;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Domain.IntegrationTests;
 
-[TestClass] 
+[TestClass]
 public abstract class BaseIntegrationTest
 {
     private static IServiceProvider _serviceProvider = null!;
@@ -19,15 +20,15 @@ public abstract class BaseIntegrationTest
     public static void AssemblyInitialize(TestContext testContext)
     {
         var currentDirectory = Path.GetDirectoryName(typeof(BaseIntegrationTest).Assembly.Location)!;
-    
+
         var appSettingsPath = Path.Combine(currentDirectory, "appsettings.json");
 
         var configuration = new ConfigurationBuilder()
             .AddJsonFile(appSettingsPath)
             .Build();
-    
+
         _serviceProvider = new ServiceCollection()
-            .AddDomain()
+            .AddApplicationServices()
             .AddInfra(configuration)
             .BuildServiceProvider();
     }
@@ -37,16 +38,16 @@ public abstract class BaseIntegrationTest
     {
         return _serviceProvider.GetRequiredService<TService>();
     }
-    
+
     [TestCleanup]
     public async Task CleanUp()
     {
         var context = GetService<AppDbContext>();
-        
+
         context.Tenants.RemoveRange(context.Tenants);
         context.TagGroups.RemoveRange(context.TagGroups);
         context.Tags.RemoveRange(context.Tags);
-        
+
         await context.SaveChangesAsync();
     }
 }

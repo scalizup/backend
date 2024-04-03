@@ -1,4 +1,4 @@
-﻿using Domain.UseCases.Tag.Commands;
+﻿using Application.Tags.Commands;
 
 namespace Domain.UnitTests.UseCases.Tag.Commands.DeleteTagTests;
 

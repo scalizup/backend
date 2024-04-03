@@ -1,5 +1,5 @@
-﻿using Domain.Repositories;
-using Domain.UseCases.TagGroup.Queries;
+﻿using Application.Repositories;
+using Application.TagGroups.Queries;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 

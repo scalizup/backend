@@ -1,6 +1,5 @@
-﻿using Domain.UseCases.Tenant.Queries;
-using Domain.Utils;
-using FluentAssertions;
+﻿using Application.Models;
+using Application.Tenants.Queries;
 
 namespace Domain.IntegrationTests.UseCases.Tenant.Queries;
 

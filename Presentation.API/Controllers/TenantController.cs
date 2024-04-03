@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
-using Domain.UseCases.Tenant.Commands;
-using Domain.UseCases.Tenant.Queries;
-using Domain.Utils;
+using Application.Models;
+using Application.Tenants.Commands;
+using Application.Tenants.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

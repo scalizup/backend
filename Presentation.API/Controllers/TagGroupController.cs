@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
-using Domain.UseCases.TagGroup.Commands;
-using Domain.UseCases.TagGroup.Queries;
-using Domain.Utils;
+using Application.Models;
+using Application.TagGroups.Commands;
+using Application.TagGroups.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

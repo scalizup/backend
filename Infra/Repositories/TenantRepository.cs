@@ -1,6 +1,6 @@
-﻿using Domain.Entities;
-using Domain.Repositories;
-using Domain.Utils;
+﻿using Application.Models;
+using Application.Repositories;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra.Repositories;

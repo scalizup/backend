@@ -1,4 +1,4 @@
-﻿using Domain.UseCases.Tenant.Commands;
+﻿using Application.Tenants.Commands;
 
 namespace Domain.UnitTests.UseCases.Tenant.Commands.DeleteTenantTests;
 

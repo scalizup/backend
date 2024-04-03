@@ -1,6 +1,5 @@
-﻿using Domain.UseCases.Tag.Queries;
-using Domain.Utils;
-using FluentAssertions;
+﻿using Application.Models;
+using Application.Tags.Queries;
 
 namespace Domain.IntegrationTests.UseCases.Tag.Queries;
 

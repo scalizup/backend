@@ -1,5 +1,4 @@
-﻿using Domain.UseCases.Tenant.Commands;
-using FluentAssertions;
+﻿using Application.Tenants.Commands;
 
 namespace Domain.IntegrationTests.UseCases.Tenant.Commands;
 
