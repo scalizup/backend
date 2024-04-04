@@ -1,4 +1,4 @@
-﻿using Application.Tenants.Commands;
+﻿using Application.UseCases.Tenants.Commands;
 
 namespace Domain.UnitTests.UseCases.Tenant.Commands.CreateTenantTests;
 

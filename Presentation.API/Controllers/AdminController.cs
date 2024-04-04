@@ -1,5 +1,9 @@
 ﻿using System.Net.Mime;
-using Application.Users.Commands;
+using Application.UseCases.Auth.Roles.Commands;
+using Application.UseCases.Auth.Roles.Queries;
+using Application.UseCases.Auth.Tenants.Commands;
+using Application.UseCases.Auth.Users.Queries;
+using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +14,7 @@ namespace Presentation.API.Controllers;
 [Route("api/[controller]")]
 public class AdminController(ISender mediator) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost("create-role")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<bool>> CreateRole([FromBody] CreateRole.Command command)
@@ -22,16 +26,6 @@ public class AdminController(ISender mediator) : ControllerBase
             StatusCode = StatusCodes.Status201Created
         };
     }
-
-    // [HttpGet]
-    // public async Task<ActionResult<PageQueryResponse<GetAllTags.TagDto>>> GetAllRoles(
-    //     [FromQuery] PageQuery pageQuery,
-    //     [FromQuery] int tagGroupId)
-    // {
-    //     var tags = await mediator.Send(new GetAllTags.Query(tagGroupId, pageQuery));
-    //
-    //     return Ok(tags);
-    // }
 
     [HttpPost("add-user-to-role")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -53,5 +47,27 @@ public class AdminController(ISender mediator) : ControllerBase
         await mediator.Send(command);
 
         return NoContent();
+    }
+    
+    [HttpGet("get-all-roles")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<Role>>> GetAllRoles()
+    {
+        var roles = await mediator.Send(new GetAllRoles.Query());
+
+        return Ok(roles);
+    }
+    
+    [HttpGet("get-all-users")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
+    {
+        var roles = await mediator.Send(new GetAllUsers.Query());
+
+        return Ok(roles);
     }
 }

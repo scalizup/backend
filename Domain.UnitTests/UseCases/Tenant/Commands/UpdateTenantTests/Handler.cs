@@ -1,6 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Repositories;
-using Application.Tenants.Commands;
+using Application.UseCases.Tenants.Commands;
 using NSubstitute;
 
 namespace Domain.UnitTests.UseCases.Tenant.Commands.UpdateTenantTests;

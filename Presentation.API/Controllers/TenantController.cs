@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
 using Application.Models;
-using Application.Tenants.Commands;
-using Application.Tenants.Queries;
+using Application.UseCases.Tenants.Commands;
+using Application.UseCases.Tenants.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +28,10 @@ public class TenantController(ISender mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<GetTenantById.TenantDto>> GetTenantById([FromRoute] int id)
     {
-        var tenant = await mediator.Send(new GetTenantById.Query(id));
+        var tenant = await mediator.Send(new GetTenantById.Query
+        {
+            TenantId = id
+        });
 
         return Ok(tenant);
     }

@@ -9,5 +9,7 @@ public class Tenant(
 
     public bool IsActive { get; set; }
 
-    public IEnumerable<TagGroup> TagGroups { get; set; } = default!;
+    public List<TagGroup> TagGroups { get; set; } = default!;
+    
+    public List<User> Users { get; set; } = default!;
 }

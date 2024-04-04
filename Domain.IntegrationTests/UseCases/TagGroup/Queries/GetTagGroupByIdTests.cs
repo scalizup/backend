@@ -1,4 +1,4 @@
-﻿using Application.TagGroups.Queries;
+﻿using Application.UseCases.TagGroups.Queries;
 
 namespace Domain.IntegrationTests.UseCases.TagGroup.Queries;
 

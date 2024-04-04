@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
 using Application.Models;
-using Application.Tags.Commands;
-using Application.Tags.Queries;
+using Application.UseCases.Tags.Commands;
+using Application.UseCases.Tags.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

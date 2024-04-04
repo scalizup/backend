@@ -1,6 +1,6 @@
 ﻿using Application.Models;
 using Application.Repositories;
-using Application.Tags.Queries;
+using Application.UseCases.Tags.Queries;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 

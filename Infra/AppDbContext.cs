@@ -1,11 +1,9 @@
 ﻿using Domain.Entities;
-using Infra.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser>(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<Tenant> Tenants { get; set; } = default!;
 
@@ -13,12 +11,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
 
     public DbSet<Tag> Tags { get; set; } = default!;
 
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        builder.Entity<ApplicationUser>()
-            .HasMany(u => u.AvailableTenants)
-            .WithMany();
+    public DbSet<User> Users { get; set; } = default!;
+    
+    public DbSet<Role> Roles { get; set; } = default!;
 
-        base.OnModelCreating(builder);
-    }
+    public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
 }

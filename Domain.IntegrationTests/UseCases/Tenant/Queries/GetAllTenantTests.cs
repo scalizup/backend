@@ -1,5 +1,5 @@
 ﻿using Application.Models;
-using Application.Tenants.Queries;
+using Application.UseCases.Tenants.Queries;
 
 namespace Domain.IntegrationTests.UseCases.Tenant.Queries;
 

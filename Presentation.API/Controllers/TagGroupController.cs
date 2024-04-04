@@ -1,7 +1,7 @@
 ﻿using System.Net.Mime;
 using Application.Models;
-using Application.TagGroups.Commands;
-using Application.TagGroups.Queries;
+using Application.UseCases.TagGroups.Commands;
+using Application.UseCases.TagGroups.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +43,10 @@ public class TagGroupController(ISender mediator) : ControllerBase
         [FromQuery] PageQuery pageQuery,
         [FromQuery] int tenantId)
     {
-        var tagGroups = await mediator.Send(new GetAllTagGroups.Query(tenantId, pageQuery));
+        var tagGroups = await mediator.Send(new GetAllTagGroups.Query(pageQuery)
+        {
+            TenantId = tenantId
+        });
 
         return Ok(tagGroups);
     }

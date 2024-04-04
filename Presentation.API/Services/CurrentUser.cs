@@ -5,7 +5,15 @@ namespace Presentation.API.Services;
 
 public class CurrentUser(IHttpContextAccessor httpContextAccessor) : IUser
 {
-    public string? Id => httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    public int? Id => ClaimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) is { } id
+        ? int.Parse(id)
+        : null;
 
     public ClaimsPrincipal? ClaimsPrincipal => httpContextAccessor.HttpContext?.User;
+
+    public int TenantId { get; set; }
+
+    public IEnumerable<string> Roles { get; set; } = [];
+
+    public string RequestIp { get; set; } = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "";
 }

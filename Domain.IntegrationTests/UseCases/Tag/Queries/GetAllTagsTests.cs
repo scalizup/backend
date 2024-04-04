@@ -1,5 +1,5 @@
 ﻿using Application.Models;
-using Application.Tags.Queries;
+using Application.UseCases.Tags.Queries;
 
 namespace Domain.IntegrationTests.UseCases.Tag.Queries;
 

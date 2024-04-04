@@ -1,12 +1,8 @@
-﻿using System.Security.Claims;
-
-namespace Application.Common.Interfaces;
+﻿namespace Application.Common.Interfaces;
 
 public interface IUser
 {
-    string? Id { get; }
+    int? Id { get; }
 
-    ClaimsPrincipal? ClaimsPrincipal { get; }
-    
-    int TenantId { get; }
+    public string RequestIp { get; set; }
 }

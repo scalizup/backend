@@ -1,5 +1,5 @@
 ﻿using Application.Repositories;
-using Application.Tags.Commands;
+using Application.UseCases.Tags.Commands;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 

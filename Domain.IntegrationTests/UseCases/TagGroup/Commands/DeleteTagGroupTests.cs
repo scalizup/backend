@@ -1,4 +1,4 @@
-﻿using Application.TagGroups.Commands;
+﻿using Application.UseCases.TagGroups.Commands;
 
 namespace Domain.IntegrationTests.UseCases.TagGroup.Commands;
 

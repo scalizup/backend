@@ -1,10 +1,11 @@
 ﻿using Application.Common.Interfaces;
 using Application.Repositories;
-using Domain.Constants;
-using Infra.Identity;
+using Infra.Configuration;
+using Infra.Configuration.Options;
 using Infra.Repositories;
+using Infra.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,26 +29,26 @@ public static class DependencyInjection
         services
             .AddScoped<ITenantRepository, TenantRepository>()
             .AddScoped<ITagGroupRepository, TagGroupRepository>()
-            .AddScoped<ITagRepository, TagRepository>();
+            .AddScoped<ITagRepository, TagRepository>()
+            .AddScoped<IUserRepository, UserRepository>()
+            .AddScoped<IRoleRepository, RoleRepository>()
+            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
-        services.AddAuthentication()
-            .AddBearerToken(IdentityConstants.BearerScheme);
+        services.AddOptions<JwtConfiguration>()
+            .Bind(configuration.GetSection("Jwt"));
 
         services
-            .AddIdentityCore<ApplicationUser>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddApiEndpoints();
+            .ConfigureOptions<JwtOptions>();
+
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer()
+            .Services
+            .AddAuthorization();
+
+        services.AddScoped<ITokenService, TokenService>();
 
         services.AddSingleton(TimeProvider.System);
-        services.AddTransient<IIdentityService, IdentityService>();
-        services.AddScoped<IRoleService, RoleService>();
-
-        services.AddAuthorization(options =>
-            {
-                options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator));
-            }
-        );
 
         return services;
     }

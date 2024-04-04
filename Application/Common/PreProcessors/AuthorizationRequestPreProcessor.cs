@@ -1,59 +1,97 @@
 using System.Reflection;
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
+using Application.Common.Security.AttributeHandlers.Interfaces;
+using Application.Repositories;
+using Domain.Constants;
 using MediatR;
 using MediatR.Pipeline;
 
 namespace Application.Common.PreProcessors;
 
-public class AuthorizationRequestPreProcessor<TRequest>(IUser user, IIdentityService identityService)
+public class AuthorizationRequestPreProcessor<TRequest>(
+    IUser user,
+    IRoleRepository roleRepository,
+    IUserRepository userRepository)
     : IRequestPreProcessor<TRequest> where TRequest : notnull
 {
+    private readonly string[] _priorityRolesAndPolicies =
+    [
+        UserRoles.Admin
+    ];
+
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {
         var authorizeAttributes = request.GetType().GetCustomAttributes<AuthorizeAttribute>().ToList();
-
+        
         if (authorizeAttributes.Count != 0)
         {
-            // Must be authenticated user
-            if (user.Id == null)
+            if (user.Id is null)
             {
                 throw new UnauthorizedAccessException();
             }
 
-            // Role-based authorization
-            var authorizeAttributesWithRoles = authorizeAttributes
-                .Where(a => !string.IsNullOrWhiteSpace(a.Roles))
-                .ToList();
-
-            if (authorizeAttributesWithRoles.Any())
+            var itIsPriorityRole = false;
+            if (request is BasePermissionRequest basePermissionRequest)
             {
-                var authorized = false;
+                var existingUser = await userRepository.GetUserByIdAsync(user.Id.Value, cancellationToken);
+                basePermissionRequest.User = user;
 
-                foreach (var roles in authorizeAttributesWithRoles.Select(a => a.Roles.Split(',')))
+                var tenantId = request.GetType()
+                    .GetProperty(nameof(basePermissionRequest.TenantId))
+                    ?.GetValue(request) as int? ?? 0;
+
+                itIsPriorityRole = existingUser!.Roles.Select(r => r.Name)
+                    .Any(r => _priorityRolesAndPolicies.Contains(r));
+
+                if (!itIsPriorityRole)
                 {
-                    foreach (var role in roles)
+                    var availableTenants = existingUser.AvailableTenants.Select(t => t.Id).ToList();
+                    if (availableTenants.Count != 0)
                     {
-                        var isInRole = await identityService.IsInRoleAsync(user.Id, role.Trim());
-                        if (isInRole)
-                        {
-                            authorized = true;
-                            break;
-                        }
+                        throw new ForbiddenAccessException("The user is not assigned to any tenant.");
+                    }
+
+                    var isUserInTenant = availableTenants.Contains(tenantId);
+                    if (!isUserInTenant)
+                    {
+                        throw new ForbiddenAccessException("The user does not have access to the requested tenant.");
                     }
                 }
 
-                if (!authorized)
+                basePermissionRequest.TenantId = tenantId > 0
+                    ? tenantId
+                    : existingUser.AvailableTenants.FirstOrDefault()?.Id ?? 0;
+            }
+
+            var authorizeAttributesWithPolicies = GetPoliciesFromAttributes(authorizeAttributes);
+
+            var authorized = false;
+            if (authorizeAttributesWithPolicies.Roles.Length == 0)
+            {
+                authorized = true;
+            }
+            else
+            {
+                foreach (var role in authorizeAttributesWithPolicies.Roles)
                 {
-                    throw new ForbiddenAccessException();
+                    var isInRole = await roleRepository.IsInRoleAsync(user.Id.Value, role);
+                    if (isInRole)
+                    {
+                        authorized = true;
+                        break;
+                    }
                 }
             }
 
-            // Policy-based authorization
-            var authorizeAttributesWithPolicies = GetPoliciesFromAttributes(authorizeAttributes);
-            if (authorizeAttributesWithPolicies.Length != 0)
+            if (!authorized)
             {
-                foreach (var policy in authorizeAttributesWithPolicies)
+                throw new ForbiddenAccessException();
+            }
+
+            if (authorizeAttributesWithPolicies.Policies.Length != 0 && !itIsPriorityRole)
+            {
+                foreach (var policy in authorizeAttributesWithPolicies.Policies)
                 {
                     await HandlePolicy(policy, (IBaseRequest)request);
                 }
@@ -61,12 +99,19 @@ public class AuthorizationRequestPreProcessor<TRequest>(IUser user, IIdentitySer
         }
     }
 
-    private string[] GetPoliciesFromAttributes(IEnumerable<AuthorizeAttribute> authorizeAttributes)
+    private (string[] Roles, string[] Policies) GetPoliciesFromAttributes(IList<AuthorizeAttribute> authorizeAttributes)
     {
-        return authorizeAttributes
-            .Where(a => !string.IsNullOrWhiteSpace(a.Policy))
+        var policiesAttributes = authorizeAttributes
             .Select(a => a.Policy)
+            .Where(p => !string.IsNullOrEmpty(p))
             .ToArray();
+
+        var rolesAttributes = authorizeAttributes
+            .SelectMany(a => a.Roles)
+            .Where(p => !string.IsNullOrEmpty(p))
+            .ToArray();
+
+        return (rolesAttributes, policiesAttributes);
     }
 
     private async Task HandlePolicy(string policy, IBaseRequest request)
@@ -83,7 +128,7 @@ public class AuthorizationRequestPreProcessor<TRequest>(IUser user, IIdentitySer
 
     private async Task InvokeHandler(Type handlerType, IBaseRequest request)
     {
-        var handler = Activator.CreateInstance(handlerType, identityService);
+        var handler = Activator.CreateInstance(handlerType, userRepository);
         var handleMethod = handlerType.GetMethod("Handle");
         var result = await (Task<bool>)handleMethod?.Invoke(handler, [request, user])!;
 
@@ -98,28 +143,6 @@ public class AuthorizationRequestPreProcessor<TRequest>(IUser user, IIdentitySer
         return Assembly.GetExecutingAssembly().GetTypes()
             .FirstOrDefault(t =>
                 t.GetInterfaces().Any(i => i.IsAssignableTo(typeof(IAuthorizationRequestAttributeHandler)))
-                && t.Name.Contains(policy));
-    }
-}
-
-public interface IAuthorizationRequestAttributeHandler
-{
-    Task<bool> Handle(IBaseRequest request, IUser user);
-}
-
-public class NeedsTenantAccessPolicyHandler(IIdentityService identityService)
-    : IAuthorizationRequestAttributeHandler
-{
-    public async Task<bool> Handle(
-        IBaseRequest request,
-        IUser user)
-    {
-        var tenantId = (request as BasePermissionRequest)!.TenantId;
-        if (tenantId < 1)
-        {
-            throw new ForbiddenAccessException();
-        }
-
-        return await identityService.IsInTenant(user.Id!, tenantId);
+                && t.GetCustomAttributes<AuthorizationRequestAttribute>().Any(a => a.Name == policy));
     }
 }

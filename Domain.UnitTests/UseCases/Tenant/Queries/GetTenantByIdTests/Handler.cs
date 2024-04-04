@@ -1,6 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Repositories;
-using Application.Tenants.Queries;
+using Application.UseCases.Tenants.Queries;
 using NSubstitute;
 
 namespace Domain.UnitTests.UseCases.Tenant.Queries.GetTenantByIdTests;

@@ -1,7 +1,11 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Application;
 using Application.Common.Interfaces;
 using Infra;
-using Infra.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.API;
 using Presentation.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +34,11 @@ builder.Services.AddSwaggerGen(options =>
     options.SupportNonNullableReferenceTypes();
 });
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
 builder.Services
     .AddApplicationServices()
     .AddInfra(builder.Configuration);
@@ -39,6 +48,8 @@ builder.Services.AddCors();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IUser, CurrentUser>();
+
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -53,11 +64,6 @@ if (app.Environment.IsDevelopment())
         .UseSwagger()
         .UseSwaggerUI();
 }
-
-app
-    .MapGroup("/api/users")
-    .MapIdentityApi<ApplicationUser>()
-    .WithTags("Users");
 
 app.MapControllers();
 

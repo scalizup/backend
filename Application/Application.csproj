@@ -15,7 +15,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Users\Queries\" />
+      <Reference Include="Microsoft.AspNetCore.Mvc.Core">
+        <HintPath>..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\8.0.3\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="UseCases\Auth\Roles\" />
     </ItemGroup>
 
 </Project>
