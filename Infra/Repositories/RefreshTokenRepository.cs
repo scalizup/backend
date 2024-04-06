@@ -29,4 +29,10 @@ public class RefreshTokenRepository(AppDbContext context) : IRefreshTokenReposit
 
         return result > 0;
     }
+
+    public async Task<bool> CheckIfTokenIsBlacklistedAsync(string token, CancellationToken cancellationToken)
+    {
+        return await context.RefreshTokens 
+            .AnyAsync(t => t.Token == token && t.IsBlacklisted, cancellationToken);
+    }
 }

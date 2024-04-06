@@ -9,4 +9,6 @@ public interface IRefreshTokenRepository
     Task<RefreshToken> CreateRefreshToken(RefreshToken refreshToken, CancellationToken cancellationToken);
 
     Task<bool> UpdateRefreshToken(RefreshToken refreshToken, CancellationToken cancellationToken);
+
+    Task<bool> CheckIfTokenIsBlacklistedAsync(string token, CancellationToken cancellationToken);
 }

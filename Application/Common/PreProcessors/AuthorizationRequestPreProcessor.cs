@@ -12,37 +12,32 @@ namespace Application.Common.PreProcessors;
 public class AuthorizationRequestPreProcessor<TRequest>(
     IUser user,
     IRoleRepository roleRepository,
+    IRefreshTokenRepository refreshTokenRepository,
     IUserRepository userRepository)
     : IRequestPreProcessor<TRequest> where TRequest : notnull
 {
-    private readonly string[] _priorityRolesAndPolicies =
-    [
-        UserRoles.Admin
-    ];
+    private readonly string[] _priorityRolesAndPolicies = [UserRoles.Admin];
 
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {
         var authorizeAttributes = request.GetType().GetCustomAttributes<AuthorizeAttribute>().ToList();
-        
+
         if (authorizeAttributes.Count != 0)
         {
-            if (user.Id is null)
-            {
-                throw new UnauthorizedAccessException();
-            }
+            await IsValidRequest(cancellationToken);
 
             var itIsPriorityRole = false;
             if (request is BasePermissionRequest basePermissionRequest)
             {
-                var existingUser = await userRepository.GetUserByIdAsync(user.Id.Value, cancellationToken);
+                var existingUser = await userRepository.GetUserByIdAsync(user.Id!.Value, cancellationToken);
+                itIsPriorityRole = existingUser!.Roles.Select(r => r.Name)
+                    .Any(r => _priorityRolesAndPolicies.Contains(r));
+
                 basePermissionRequest.User = user;
 
                 var tenantId = request.GetType()
                     .GetProperty(nameof(basePermissionRequest.TenantId))
                     ?.GetValue(request) as int? ?? 0;
-
-                itIsPriorityRole = existingUser!.Roles.Select(r => r.Name)
-                    .Any(r => _priorityRolesAndPolicies.Contains(r));
 
                 if (!itIsPriorityRole)
                 {
@@ -61,17 +56,14 @@ public class AuthorizationRequestPreProcessor<TRequest>(
 
                 basePermissionRequest.TenantId = tenantId > 0
                     ? tenantId
-                    : existingUser.AvailableTenants.FirstOrDefault()?.Id ?? 0;
+                    : existingUser.AvailableTenants.First().Id;
             }
 
             var authorizeAttributesWithPolicies = GetPoliciesFromAttributes(authorizeAttributes);
 
             var authorized = false;
-            if (authorizeAttributesWithPolicies.Roles.Length == 0)
-            {
-                authorized = true;
-            }
-            else
+
+            if (authorizeAttributesWithPolicies.Roles.Length > 0 && !itIsPriorityRole)
             {
                 foreach (var role in authorizeAttributesWithPolicies.Roles)
                 {
@@ -83,6 +75,10 @@ public class AuthorizationRequestPreProcessor<TRequest>(
                     }
                 }
             }
+            else
+            {
+                authorized = true;
+            }
 
             if (!authorized)
             {
@@ -93,9 +89,28 @@ public class AuthorizationRequestPreProcessor<TRequest>(
             {
                 foreach (var policy in authorizeAttributesWithPolicies.Policies)
                 {
-                    await HandlePolicy(policy, (IBaseRequest)request);
+                    await AuthorizationRequestAttributeHandlerReflector.HandlePolicy(
+                        policy, 
+                        (IBaseRequest)request,
+                        userRepository, user);
                 }
             }
+        }
+    }
+
+    private async Task IsValidRequest(CancellationToken cancellationToken)
+    {
+        if (user.Id is null || string.IsNullOrEmpty(user.RefreshToken))
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        var refreshTokenIsBlacklisted = await refreshTokenRepository
+            .CheckIfTokenIsBlacklistedAsync(user.RefreshToken, cancellationToken);
+
+        if (refreshTokenIsBlacklisted)
+        {
+            throw new UnauthorizedAccessException("Refresh token is blacklisted. Please log in again.");
         }
     }
 
@@ -112,37 +127,5 @@ public class AuthorizationRequestPreProcessor<TRequest>(
             .ToArray();
 
         return (rolesAttributes, policiesAttributes);
-    }
-
-    private async Task HandlePolicy(string policy, IBaseRequest request)
-    {
-        var handlerType = GetHandlerType(policy);
-
-        if (handlerType is null)
-        {
-            throw new InvalidOperationException($"Handler for policy {policy} not found.");
-        }
-
-        await InvokeHandler(handlerType, request);
-    }
-
-    private async Task InvokeHandler(Type handlerType, IBaseRequest request)
-    {
-        var handler = Activator.CreateInstance(handlerType, userRepository);
-        var handleMethod = handlerType.GetMethod("Handle");
-        var result = await (Task<bool>)handleMethod?.Invoke(handler, [request, user])!;
-
-        if (!result)
-        {
-            throw new ForbiddenAccessException();
-        }
-    }
-
-    private static Type? GetHandlerType(string policy)
-    {
-        return Assembly.GetExecutingAssembly().GetTypes()
-            .FirstOrDefault(t =>
-                t.GetInterfaces().Any(i => i.IsAssignableTo(typeof(IAuthorizationRequestAttributeHandler)))
-                && t.GetCustomAttributes<AuthorizationRequestAttribute>().Any(a => a.Name == policy));
     }
 }

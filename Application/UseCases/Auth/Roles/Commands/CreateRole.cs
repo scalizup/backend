@@ -6,7 +6,7 @@ namespace Application.UseCases.Auth.Roles.Commands;
 
 public static class CreateRole
 {
-    [Authorize(Role = Domain.Constants.UserRoles.Admin)]
+    // [Authorize(Role = Domain.Constants.UserRoles.Admin)]
     public record Command(
         string Name) : IRequest<int>;
 

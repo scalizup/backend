@@ -1,11 +1,8 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Text.Json.Serialization.Metadata;
 using Application;
 using Application.Common.Interfaces;
 using Infra;
 using Microsoft.AspNetCore.Mvc;
-using Presentation.API;
+using Presentation.API.Middlewares;
 using Presentation.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +40,8 @@ builder.Services
     .AddApplicationServices()
     .AddInfra(builder.Configuration);
 
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 builder.Services.AddCors();
 
 builder.Services.AddControllers();
@@ -66,6 +65,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
+app.UseExceptionHandler(options => { });
 
 app.UseHttpsRedirection();
 app.Run();

@@ -37,4 +37,20 @@ public class AuthorizeAttribute : Attribute
     /// Gets or sets the policy name that determines access to the resource.
     /// </summary>
     public string Policy { get; set; } = default!;
+    
+
+    private string[] _policies = Array.Empty<string>();
+    public string[] Policies
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Policy))
+            {
+                _policies = [Policy];
+            }
+
+            return _policies;
+        }
+        set => _policies = value;
+    }
 }

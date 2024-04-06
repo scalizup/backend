@@ -5,7 +5,7 @@ namespace Presentation.API.Services;
 
 public class CurrentUser(IHttpContextAccessor httpContextAccessor) : IUser
 {
-    public int? Id => ClaimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) is { } id
+    public int? Id =>  ClaimsPrincipal?.FindFirstValue(ClaimTypes.NameIdentifier) is { } id
         ? int.Parse(id)
         : null;
 
@@ -16,4 +16,7 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : IUser
     public IEnumerable<string> Roles { get; set; } = [];
 
     public string RequestIp { get; set; } = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "";
+
+    public string RefreshToken { get; set; } =
+        httpContextAccessor.HttpContext?.Request.Headers["refreshToken"].FirstOrDefault() ?? "";
 }

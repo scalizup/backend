@@ -1,5 +1,6 @@
 ﻿using Application.Repositories;
 using Domain.Entities;
+using FluentValidation;
 using MediatR;
 
 namespace Application.UseCases.TagGroups.Commands;
@@ -8,6 +9,16 @@ public static class CreateTagGroup
 {
     public record Command(
         string Name) : BasePermissionRequest, IRequest<int>;
+    
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Name)
+                .NotEmpty()
+                .MinimumLength(2);
+        }
+    }
 
     public class Handler(ITagGroupRepository tagGroupRepository) : IRequestHandler<Command, int>
     {

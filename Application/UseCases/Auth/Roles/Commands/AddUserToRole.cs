@@ -7,7 +7,7 @@ namespace Application.UseCases.Auth.Roles.Commands;
 
 public static class AddUserToRole
 {
-    [Authorize(Role = Domain.Constants.UserRoles.Admin)]
+    // [Authorize(Role = Domain.Constants.UserRoles.Admin)]
     public record Command(
         int UserId,
         string Name) : IRequest<bool>;

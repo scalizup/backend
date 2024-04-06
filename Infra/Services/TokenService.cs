@@ -78,24 +78,25 @@ public class TokenService(
             IssuerSigningKey = _jwtConfiguration.SignedKey,
         };
 
-        if (userRequest.Id is null or < 1)
+        if (token.Contains("Bearer "))
         {
-            throw new Exception("You must be authenticated to refresh a token");
+            token = token.Replace("Bearer ", "");
         }
 
         var result = await _tokenHandler.ValidateTokenAsync(token, validationParameters);
-        if (result.Claims["linkGuid"] is not string linkGuid)
+        var userIdClaim = result.Claims[ClaimTypes.NameIdentifier] as string;
+        if (!int.TryParse(userIdClaim, out var userId) || result.Claims["linkGuid"] is not string linkGuid)
         {
             throw new Exception("Refresh token is invalid, please login again.");
         }
 
         var refreshTokenEntity = await refreshTokenRepository.GetRefreshToken(refreshToken, cancellationToken);
-        if (refreshTokenEntity is null || refreshTokenEntity.IsExpired || linkGuid != refreshTokenEntity.LinkGuidJwt)
+        if (refreshTokenEntity is null || refreshTokenEntity.IsBlacklisted || refreshTokenEntity.IsExpired || linkGuid != refreshTokenEntity.LinkGuidJwt)
         {
             throw new Exception("Refresh token is invalid, please login again.");
         }
-
-        var user = await userRepository.GetUserByIdAsync(userRequest.Id.Value, cancellationToken);
+        
+        var user = await userRepository.GetUserByIdAsync(userId, cancellationToken);
         var (newToken, newRefreshToken) = await GenerateToken(user!, cancellationToken);
 
         refreshTokenEntity.RevokedAt = DateTime.UtcNow;

@@ -21,6 +21,8 @@ public class RefreshToken : BaseEntity
     public string? ReplacedByToken { get; set; }
 
     public bool IsActive => ReplacedByToken is null;
+    
+    public bool IsBlacklisted { get; set; }
 
     public string LinkGuidJwt { get; set; } = default!;
 }
