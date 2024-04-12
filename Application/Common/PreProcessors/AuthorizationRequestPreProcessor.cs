@@ -67,7 +67,7 @@ public class AuthorizationRequestPreProcessor<TRequest>(
             {
                 foreach (var role in authorizeAttributesWithPolicies.Roles)
                 {
-                    var isInRole = await roleRepository.IsInRoleAsync(user.Id.Value, role);
+                    var isInRole = await roleRepository.IsInRoleAsync(user.Id!.Value, role);
                     if (isInRole)
                     {
                         authorized = true;
@@ -105,10 +105,10 @@ public class AuthorizationRequestPreProcessor<TRequest>(
             throw new UnauthorizedAccessException();
         }
 
-        var refreshTokenIsBlacklisted = await refreshTokenRepository
-            .CheckIfTokenIsBlacklistedAsync(user.RefreshToken, cancellationToken);
-
-        if (refreshTokenIsBlacklisted)
+        var refreshToken = await refreshTokenRepository
+            .GetRefreshToken(user.RefreshToken, cancellationToken);
+        
+        if (refreshToken is null || refreshToken.IsBlacklisted || refreshToken.IsActive is false)
         {
             throw new UnauthorizedAccessException("Refresh token is blacklisted. Please log in again.");
         }

@@ -38,13 +38,13 @@ public static class LoginUser
                 throw new ForbiddenAccessException("Invalid username or password.");
             }
 
-            var (token, refreshToken) = await tokenService.GenerateToken(user, cancellationToken);
+            var (accessToken, refreshToken) = await tokenService.GenerateToken(user, cancellationToken);
 
-            return new(token, refreshToken);
+            return new(accessToken, refreshToken);
         }
     }
 
     public record Dto(
-        string Token,
+        string AccessToken,
         string RefreshToken);
 }

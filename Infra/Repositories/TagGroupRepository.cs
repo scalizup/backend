@@ -91,4 +91,47 @@ public class TagGroupRepository(
 
         return result > 0;
     }
+    
+    public async Task<IEnumerable<TagGroup>> GetTagGroupWithTagsBySearchTerm(
+        int tenantId,
+        string searchTerm,
+        CancellationToken cancellationToken)
+    {
+        var tagGroups = await context.TagGroups
+            .Include(tg => tg.Tags)
+            .Where(tg =>
+                    tg.TenantId == tenantId
+                    && tg.Tags.Any()
+                    && tg.Name.ToLower().Contains(searchTerm) ||
+                    tg.Tags.Any(t => t.Name.ToLower().Contains(searchTerm)))
+            .ToListAsync(cancellationToken);
+
+        return tagGroups;
+    }
+
+    public async Task<PageQueryResponse<TagGroup>> GetAllTagGroupsWithTags(
+        int tenantId,
+        PageQuery pageQuery,
+        CancellationToken cancellationToken)
+    {
+        var skip = pageQuery.PageSize * (pageQuery.PageNumber - 1);
+
+        var tagGroups = await context.TagGroups
+            .Where(tg => tg.TenantId == tenantId && tg.Tags.Any())
+            .OrderBy(tg => tg.Id)
+            .Skip(skip)
+            .Take(pageQuery.PageSize)
+            .Include(tg => tg.Tags)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        var totalEntities = await context.TagGroups
+            .Where(tg => tg.TenantId == tenantId)
+            .CountAsync(cancellationToken);
+
+        return new PageQueryResponse<TagGroup>(
+            totalEntities,
+            pageQuery,
+            tagGroups);
+    }
 }

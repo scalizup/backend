@@ -28,13 +28,13 @@ public static class RefreshUserToken
     {
         public async Task<Dto> Handle(Command request, CancellationToken cancellationToken)
         {
-            var (token, refreshToken) =  await tokenService.ValidateAndRefreshTokenAsync(request.AccessToken, request.RefreshToken, cancellationToken);
+            var (accessToken, refreshToken) =  await tokenService.ValidateAndRefreshTokenAsync(request.AccessToken, request.RefreshToken, cancellationToken);
 
-            return new(token, refreshToken);
+            return new(accessToken, refreshToken);
         }
     }
 
     public record Dto(
-        string Token,
+        string AccessToken,
         string RefreshToken);
 }

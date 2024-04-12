@@ -35,6 +35,17 @@ public class TagGroupController(ISender mediator) : ControllerBase
 
         return Ok(tagGroup);
     }
+    
+    [HttpGet("tags/{searchTerm}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTagGroupById.TagGroupDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<GetTagGroupById.TagGroupDto>> GetTagGroupWithTagsBySearchTerm([FromRoute] string searchTerm)
+    {
+        var tagGroup = await mediator.Send(new GetTagGroupWithTagsBySearchTerm.Query(searchTerm));
+
+        return Ok(tagGroup);
+    }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PageQueryResponse<GetAllTagGroups.TagGroupDto>))]
@@ -47,6 +58,17 @@ public class TagGroupController(ISender mediator) : ControllerBase
         {
             TenantId = tenantId
         });
+
+        return Ok(tagGroups);
+    }
+    
+    [HttpGet("tags")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PageQueryResponse<GetAllTagGroups.TagGroupDto>))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<PageQueryResponse<GetAllTagGroups.TagGroupDto>>> GetAllTagGroupsWithTags(
+        [FromQuery] PageQuery pageQuery)
+    {
+        var tagGroups = await mediator.Send(new GetAllTagGroupsWithTags.Query(pageQuery));
 
         return Ok(tagGroups);
     }
