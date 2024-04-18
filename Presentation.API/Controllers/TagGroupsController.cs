@@ -2,7 +2,6 @@
 using Application.Models;
 using Application.UseCases.TagGroups.Commands;
 using Application.UseCases.TagGroups.Queries;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.API.Controllers;
@@ -10,7 +9,7 @@ namespace Presentation.API.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [ApiController]
 [Route("api/[controller]")]
-public class TagGroupController(ISender mediator) : ControllerBase
+public class TagGroupsController(ISender mediator) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
@@ -36,7 +35,7 @@ public class TagGroupController(ISender mediator) : ControllerBase
         return Ok(tagGroup);
     }
     
-    [HttpGet("tags/{searchTerm}")]
+    [HttpGet("search/{searchTerm:alpha}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetTagGroupById.TagGroupDto))]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

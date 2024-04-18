@@ -10,8 +10,8 @@ public static class TypeResolvers
     {
         return typeInfo =>
         {
-            if (typeInfo.Type == typeof(IUser))
-                typeInfo.CreateObject = () => new CurrentUser(null!);
+            if (typeInfo.Type == typeof(IUserAccessor))
+                typeInfo.CreateObject = () => new CurrentUserAccessor(null!);
         };
     }
 }

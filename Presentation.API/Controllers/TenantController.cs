@@ -1,6 +1,5 @@
 ﻿using System.Net.Mime;
 using Application.UseCases.Tenants.Queries;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.API.Controllers;

@@ -1,5 +1,4 @@
 ﻿using Application.Repositories;
-using MediatR;
 
 namespace Application.UseCases.Auth.Roles.Queries;
 

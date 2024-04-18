@@ -3,7 +3,6 @@ using Application.Common.Interfaces;
 using Application.Common.Security.AttributeHandlers.Interfaces;
 using Application.Repositories;
 using Domain.Constants;
-using MediatR;
 
 namespace Application.Common.Security.AttributeHandlers;
 
@@ -13,7 +12,7 @@ public class NeedsTenantAccessPolicyHandler(IUserRepository userRepository)
 {
     public async Task<bool> Handle(
         IBaseRequest request,
-        IUser user)
+        IUserAccessor userAccessor)
     {
         var tenantId = (request as BasePermissionRequest)!.TenantId;
         if (tenantId < 1)
@@ -21,6 +20,6 @@ public class NeedsTenantAccessPolicyHandler(IUserRepository userRepository)
             throw new ForbiddenAccessException("The user does not have access to any tenant.");
         }
 
-        return await userRepository.IsInTenant(user.Id!.Value, tenantId);
+        return await userRepository.IsInTenant(userAccessor.User.Id, tenantId);
     }
 }

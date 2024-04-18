@@ -1,6 +1,5 @@
 ﻿using Application.Common.Exceptions;
 using Application.Repositories;
-using MediatR;
 
 namespace Application.UseCases.Tenants.Queries;
 

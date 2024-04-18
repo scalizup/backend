@@ -1,6 +1,5 @@
 ﻿using Application.Common.Interfaces;
 using FluentValidation;
-using MediatR;
 
 namespace Application.UseCases.Auth.Users.Commands;
 

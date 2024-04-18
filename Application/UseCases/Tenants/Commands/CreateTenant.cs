@@ -1,7 +1,5 @@
 ﻿using Application.Repositories;
 using Domain.Constants;
-using FluentValidation;
-using MediatR;
 
 namespace Application.UseCases.Tenants.Commands;
 

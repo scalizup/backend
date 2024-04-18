@@ -1,6 +1,4 @@
 ﻿using Application.Repositories;
-using FluentValidation;
-using MediatR;
 
 namespace Application.UseCases.TagGroups.Queries;
 

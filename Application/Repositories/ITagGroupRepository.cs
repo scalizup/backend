@@ -16,7 +16,7 @@ public interface ITagGroupRepository
         int tenantId,
         PageQuery pageQuery,
         CancellationToken cancellationToken);
-
+    
     Task<int> CreateTagGroup(TagGroup tagGroup, CancellationToken cancellationToken);
 
     Task<bool> UpdateTagGroup(int id, string? name, CancellationToken cancellationToken);

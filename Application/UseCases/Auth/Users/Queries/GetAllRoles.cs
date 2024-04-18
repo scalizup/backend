@@ -1,5 +1,4 @@
 ﻿using Application.Repositories;
-using MediatR;
 
 namespace Application.UseCases.Auth.Users.Queries;
 
@@ -25,7 +24,7 @@ public static class GetAllUsers
 
     public record UserDto(
         int Id,
-        string Username,
+        string? Username,
         IReadOnlyList<RoleDto> Roles,
         IReadOnlyList<TenantDto> Tenants);
 

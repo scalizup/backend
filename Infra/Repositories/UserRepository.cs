@@ -60,6 +60,7 @@ public class UserRepository(AppDbContext context) : IUserRepository
     public async Task<User?> GetUserByUsernameAsync(string username, CancellationToken cancellationToken)
     {
         return await context.Users
+            .Include(u => u.AvailableTenants)
             .FirstOrDefaultAsync(u => u.Username == username, cancellationToken);
     }
 }

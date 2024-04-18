@@ -11,6 +11,8 @@ public interface ITagRepository
         int tagGroupId,
         PageQuery pageQuery,
         CancellationToken cancellationToken);
+    
+    Task<List<Tag>> GetTagsByIds(IEnumerable<int> ids, CancellationToken cancellationToken);
 
     Task<int> CreateTag(Tag tag, CancellationToken cancellationToken);
 

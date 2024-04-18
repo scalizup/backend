@@ -1,6 +1,6 @@
 ﻿using System.Net.Mime;
 using Application.UseCases.Auth.Users.Commands;
-using MediatR;
+using Application.UseCases.Auth.Users.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.API.Controllers;
@@ -28,7 +28,17 @@ public class UsersController(ISender mediator) : ControllerBase
     {
         return Ok(await mediator.Send(command));
     }
-    
+
+    [HttpPost("logout")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult> LogoutUser()
+    {
+        await mediator.Send(new LogoutUser.Command());
+
+        return NoContent();
+    }
+
     [HttpPost("refresh")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,5 +46,12 @@ public class UsersController(ISender mediator) : ControllerBase
     {
         return Ok(await mediator.Send(command));
     }
-    
+
+    [HttpGet("me")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GetMe.MeDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<GetAllUsers.UserDto>> GetMe()
+    {
+        return Ok(await mediator.Send(new GetMe.Query()));
+    }
 }

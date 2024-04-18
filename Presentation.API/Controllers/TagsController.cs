@@ -2,7 +2,6 @@
 using Application.Models;
 using Application.UseCases.Tags.Commands;
 using Application.UseCases.Tags.Queries;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.API.Controllers;
@@ -10,7 +9,7 @@ namespace Presentation.API.Controllers;
 [Produces(MediaTypeNames.Application.Json)]
 [ApiController]
 [Route("api/[controller]")]
-public class TagController(ISender mediator) : ControllerBase
+public class TagsController(ISender mediator) : ControllerBase
 {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]

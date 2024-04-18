@@ -2,6 +2,7 @@ using Application;
 using Application.Common.Interfaces;
 using Infra;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
 using Presentation.API.Middlewares;
 using Presentation.API.Services;
 
@@ -46,7 +47,7 @@ builder.Services.AddCors();
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<IUser, CurrentUser>();
+builder.Services.AddScoped<IUserAccessor, CurrentUserAccessor>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -64,9 +65,20 @@ if (app.Environment.IsDevelopment())
         .UseSwaggerUI();
 }
 
-app.MapControllers();
+app.UseStaticFiles(new StaticFileOptions()
+{
+    // OnPrepareResponse = (context) =>
+    // {
+    //     if (!context.Context.User.Identity.IsAuthenticated)
+    //     {
+    //         throw new Exception("Not authenticated");
+    //     }
+    // },
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+    RequestPath = "/Images",
+});
 
-app.UseExceptionHandler(options => { });
+app.MapControllers();
 
 app.UseHttpsRedirection();
 app.Run();

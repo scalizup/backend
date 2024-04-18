@@ -1,8 +1,6 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.Repositories;
-using FluentValidation;
-using MediatR;
 
 namespace Application.UseCases.Auth.Users.Commands;
 

@@ -7,7 +7,6 @@ using Application.UseCases.Auth.Users.Queries;
 using Application.UseCases.Tenants.Commands;
 using Application.UseCases.Tenants.Queries;
 using Domain.Entities;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.API.Controllers;

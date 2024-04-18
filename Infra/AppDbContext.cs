@@ -10,6 +10,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<TagGroup> TagGroups { get; set; } = default!;
 
     public DbSet<Tag> Tags { get; set; } = default!;
+    
+    public DbSet<Product> Products { get; set; } = default!;
 
     public DbSet<User> Users { get; set; } = default!;
     

@@ -41,6 +41,15 @@ public class TagRepository(
             tags);
     }
 
+    public async Task<List<Tag>> GetTagsByIds(IEnumerable<int> ids, CancellationToken cancellationToken)
+    {
+        var tags = await context.Tags
+            .Where(t => ids.Contains(t.Id))
+            .ToListAsync(cancellationToken);
+
+        return tags;
+    }
+
     public async Task<int> CreateTag(Tag tag, CancellationToken cancellationToken)
     {
         await context.Tags.AddAsync(tag, cancellationToken);

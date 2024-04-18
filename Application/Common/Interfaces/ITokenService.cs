@@ -7,4 +7,6 @@ public interface ITokenService
     Task<(string Token, string RefreshToken)> GenerateToken(User user, CancellationToken cancellationToken);
     
     Task<(string Token, string RefreshToken)> ValidateAndRefreshTokenAsync(string token, string refreshToken, CancellationToken cancellationToken);
+    
+    Task RevokeRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken);
 }

@@ -30,6 +30,7 @@ public static class DependencyInjection
             .AddScoped<ITenantRepository, TenantRepository>()
             .AddScoped<ITagGroupRepository, TagGroupRepository>()
             .AddScoped<ITagRepository, TagRepository>()
+            .AddScoped<IProductRepository, ProductRepository>()
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
             .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
@@ -46,7 +47,8 @@ public static class DependencyInjection
             .Services
             .AddAuthorization();
 
-        services.AddScoped<ITokenService, TokenService>();
+        services
+            .AddScoped<ITokenService, TokenService>();
 
         services.AddSingleton(TimeProvider.System);
 

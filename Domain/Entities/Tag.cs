@@ -12,4 +12,6 @@ public class Tag(
     public int TagGroupId { get; set; } = tagGroupId;
 
     public TagGroup TagGroup { get; set; } = default!;
+    
+    public List<Product> Products { get; set; } = new();
 }

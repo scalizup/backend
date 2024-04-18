@@ -1,16 +1,14 @@
 ﻿using Application.Common.Exceptions;
 using Application.Repositories;
 using Domain.Entities;
-using FluentValidation;
-using MediatR;
 
 namespace Application.UseCases.Auth.Users.Commands;
 
 public static class RegisterUser
 {
     public record Command(
-        string Username,
-        string Password) : IRequest<int>;
+        string? Username,
+        string? Password) : IRequest<int>;
 
     public class Validator : AbstractValidator<Command>
     {

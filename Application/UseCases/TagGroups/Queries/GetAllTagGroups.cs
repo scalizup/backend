@@ -1,6 +1,5 @@
 ﻿using Application.Models;
 using Application.Repositories;
-using MediatR;
 
 namespace Application.UseCases.TagGroups.Queries;
 

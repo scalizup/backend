@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using MediatR.Pipeline;
+﻿using MediatR.Pipeline;
 using ValidationException = Application.Common.Exceptions.ValidationException;
 
 namespace Application.Common.PreProcessors;

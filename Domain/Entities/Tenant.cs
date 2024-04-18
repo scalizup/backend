@@ -12,4 +12,6 @@ public class Tenant(
     public List<TagGroup> TagGroups { get; set; } = default!;
     
     public List<User> Users { get; set; } = default!;
+    
+    public List<RefreshToken> RefreshTokens { get; set; } = default!;
 }

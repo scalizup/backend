@@ -25,4 +25,8 @@ public class RefreshToken : BaseEntity
     public bool IsBlacklisted { get; set; }
 
     public string LinkGuidJwt { get; set; } = default!;
+
+    public int TenantId { get; set; }
+    
+    public Tenant Tenant { get; set; } = default!;
 }

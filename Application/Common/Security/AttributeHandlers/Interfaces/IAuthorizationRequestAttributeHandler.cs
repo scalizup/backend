@@ -2,18 +2,17 @@
 using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Application.Repositories;
-using MediatR;
 
 namespace Application.Common.Security.AttributeHandlers.Interfaces;
 
 public interface IAuthorizationRequestAttributeHandler
 {
-    Task<bool> Handle(IBaseRequest request, IUser user);
+    Task<bool> Handle(IBaseRequest request, IUserAccessor userAccessor);
 }
 
 public static class AuthorizationRequestAttributeHandlerReflector
 {
-    public static async Task HandlePolicy(string policy, IBaseRequest request, IUserRepository userRepository, IUser user)
+    public static async Task HandlePolicy(string policy, IBaseRequest request, IUserRepository userRepository, IUserAccessor userAccessor)
     {
         var handlerType = GetHandlerType(policy);
 
@@ -22,18 +21,18 @@ public static class AuthorizationRequestAttributeHandlerReflector
             throw new InvalidOperationException($"Handler for policy {policy} not found.");
         }
 
-        await InvokeHandler(userRepository, user, handlerType, request);
+        await InvokeHandler(userRepository, userAccessor, handlerType, request);
     }
 
     private static async Task InvokeHandler(
         IUserRepository userRepository,
-        IUser user,
+        IUserAccessor userAccessor,
         Type handlerType, 
         IBaseRequest request)
     {
         var handler = Activator.CreateInstance(handlerType, userRepository);
         var handleMethod = handlerType.GetMethod("Handle");
-        var result = await (Task<bool>)handleMethod?.Invoke(handler, [request, user])!;
+        var result = await (Task<bool>)handleMethod?.Invoke(handler, [request, userAccessor])!;
 
         if (!result)
         {

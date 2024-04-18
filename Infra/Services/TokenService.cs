@@ -13,14 +13,14 @@ namespace Infra.Services;
 public class TokenService(
     IRefreshTokenRepository refreshTokenRepository,
     IUserRepository userRepository,
-    IUser userRequest,
+    IUserAccessor userAccessorRequest,
     IOptions<JwtConfiguration> jwtConfiguration)
     : ITokenService
 {
     private readonly JwtSecurityTokenHandler _tokenHandler = new();
     private readonly JwtConfiguration _jwtConfiguration = jwtConfiguration.Value;
 
-    private string GenerateRefreshToken()
+    private static string GenerateRefreshToken()
     {
         var randomNumber = new byte[32];
         using var rng = RandomNumberGenerator.Create();
@@ -41,7 +41,7 @@ public class TokenService(
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim("linkGuid", linkGuid),
             }),
-            Expires = DateTime.UtcNow.AddMinutes(15),
+            Expires = DateTime.UtcNow.AddSeconds(30),
             SigningCredentials =
                 new SigningCredentials(_jwtConfiguration.SignedKey, SecurityAlgorithms.HmacSha256),
             Issuer = _jwtConfiguration.Issuer,
@@ -55,8 +55,9 @@ public class TokenService(
             Token = refreshTokenLinkGuid,
             ExpiresAt = DateTime.UtcNow.AddMonths(1),
             CreatedAt = DateTime.UtcNow,
-            CreatedByIp = userRequest.RequestIp,
-            LinkGuidJwt = linkGuid
+            CreatedByIp = userAccessorRequest.RequestIp,
+            LinkGuidJwt = linkGuid,
+            TenantId = user.AvailableTenants.First().Id,
         };
 
         await refreshTokenRepository.CreateRefreshToken(refreshToken, cancellationToken);
@@ -91,20 +92,29 @@ public class TokenService(
         }
 
         var refreshTokenEntity = await refreshTokenRepository.GetRefreshToken(refreshToken, cancellationToken);
-        if (refreshTokenEntity is null || refreshTokenEntity.IsBlacklisted || refreshTokenEntity.IsExpired || linkGuid != refreshTokenEntity.LinkGuidJwt)
+        if (refreshTokenEntity is null || refreshTokenEntity.IsBlacklisted || refreshTokenEntity.IsExpired ||
+            linkGuid != refreshTokenEntity.LinkGuidJwt)
         {
             throw new Exception("Refresh token is invalid, please login again.");
         }
-        
+
         var user = await userRepository.GetUserByIdAsync(userId, cancellationToken);
         var (newToken, newRefreshToken) = await GenerateToken(user!, cancellationToken);
 
         refreshTokenEntity.RevokedAt = DateTime.UtcNow;
-        refreshTokenEntity.RevokedByIp = userRequest.RequestIp;
+        refreshTokenEntity.RevokedByIp = userAccessorRequest.RequestIp;
         refreshTokenEntity.ReplacedByToken = newRefreshToken;
 
         await refreshTokenRepository.UpdateRefreshToken(refreshTokenEntity, cancellationToken);
 
         return (newToken, newRefreshToken);
+    }
+
+    public async Task RevokeRefreshTokenAsync(RefreshToken refreshToken, CancellationToken cancellationToken)
+    {
+        refreshToken.RevokedAt = DateTime.UtcNow;
+        refreshToken.RevokedByIp = userAccessorRequest.RequestIp;
+
+        await refreshTokenRepository.UpdateRefreshToken(refreshToken, cancellationToken);
     }
 }

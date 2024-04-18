@@ -4,13 +4,13 @@ using Application.Common.Interfaces;
 using Application.Common.Security.AttributeHandlers.Interfaces;
 using Application.Repositories;
 using Domain.Constants;
-using MediatR;
+using Domain.Entities;
 using MediatR.Pipeline;
 
 namespace Application.Common.PreProcessors;
 
 public class AuthorizationRequestPreProcessor<TRequest>(
-    IUser user,
+    IUserAccessor userAccessor,
     IRoleRepository roleRepository,
     IRefreshTokenRepository refreshTokenRepository,
     IUserRepository userRepository)
@@ -24,16 +24,19 @@ public class AuthorizationRequestPreProcessor<TRequest>(
 
         if (authorizeAttributes.Count != 0)
         {
-            await IsValidRequest(cancellationToken);
+            var refreshToken = await IsValidRequest(cancellationToken);
 
             var itIsPriorityRole = false;
             if (request is BasePermissionRequest basePermissionRequest)
             {
-                var existingUser = await userRepository.GetUserByIdAsync(user.Id!.Value, cancellationToken);
+                var existingUser = await userRepository.GetUserByIdAsync(userAccessor.User.Id, cancellationToken);
                 itIsPriorityRole = existingUser!.Roles.Select(r => r.Name)
                     .Any(r => _priorityRolesAndPolicies.Contains(r));
 
-                basePermissionRequest.User = user;
+                basePermissionRequest.UserAccessor = userAccessor;
+                basePermissionRequest.UserAccessor.RefreshToken = refreshToken;
+                basePermissionRequest.UserAccessor.User = existingUser;
+                basePermissionRequest.TenantId = existingUser.AvailableTenants.First().Id;
 
                 var tenantId = request.GetType()
                     .GetProperty(nameof(basePermissionRequest.TenantId))
@@ -42,7 +45,7 @@ public class AuthorizationRequestPreProcessor<TRequest>(
                 if (!itIsPriorityRole)
                 {
                     var availableTenants = existingUser.AvailableTenants.Select(t => t.Id).ToList();
-                    if (availableTenants.Count != 0)
+                    if (availableTenants.Count == 0)
                     {
                         throw new ForbiddenAccessException("The user is not assigned to any tenant.");
                     }
@@ -67,7 +70,7 @@ public class AuthorizationRequestPreProcessor<TRequest>(
             {
                 foreach (var role in authorizeAttributesWithPolicies.Roles)
                 {
-                    var isInRole = await roleRepository.IsInRoleAsync(user.Id!.Value, role);
+                    var isInRole = await roleRepository.IsInRoleAsync(userAccessor.User.Id, role);
                     if (isInRole)
                     {
                         authorized = true;
@@ -90,28 +93,30 @@ public class AuthorizationRequestPreProcessor<TRequest>(
                 foreach (var policy in authorizeAttributesWithPolicies.Policies)
                 {
                     await AuthorizationRequestAttributeHandlerReflector.HandlePolicy(
-                        policy, 
+                        policy,
                         (IBaseRequest)request,
-                        userRepository, user);
+                        userRepository, userAccessor);
                 }
             }
         }
     }
 
-    private async Task IsValidRequest(CancellationToken cancellationToken)
+    private async Task<RefreshToken> IsValidRequest(CancellationToken cancellationToken)
     {
-        if (user.Id is null || string.IsNullOrEmpty(user.RefreshToken))
+        if (userAccessor.User is null || string.IsNullOrEmpty(userAccessor.RefreshToken.Token))
         {
             throw new UnauthorizedAccessException();
         }
 
         var refreshToken = await refreshTokenRepository
-            .GetRefreshToken(user.RefreshToken, cancellationToken);
-        
+            .GetRefreshToken(userAccessor.RefreshToken.Token, cancellationToken);
+
         if (refreshToken is null || refreshToken.IsBlacklisted || refreshToken.IsActive is false)
         {
             throw new UnauthorizedAccessException("Refresh token is blacklisted. Please log in again.");
         }
+
+        return refreshToken;
     }
 
     private (string[] Roles, string[] Policies) GetPoliciesFromAttributes(IList<AuthorizeAttribute> authorizeAttributes)

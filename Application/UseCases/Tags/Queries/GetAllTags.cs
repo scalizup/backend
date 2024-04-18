@@ -1,7 +1,5 @@
 ﻿using Application.Models;
 using Application.Repositories;
-using FluentValidation;
-using MediatR;
 
 namespace Application.UseCases.Tags.Queries;
 
