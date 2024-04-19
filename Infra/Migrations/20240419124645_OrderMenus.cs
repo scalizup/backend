@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -7,30 +8,42 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class OrderMenus : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "RefreshTokens",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Token = table.Column<string>(type: "text", nullable: false),
-                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedByIp = table.Column<string>(type: "text", nullable: false),
-                    RevokedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    RevokedByIp = table.Column<string>(type: "text", nullable: true),
-                    ReplacedByToken = table.Column<string>(type: "text", nullable: true),
-                    IsBlacklisted = table.Column<bool>(type: "boolean", nullable: false),
-                    LinkGuidJwt = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<decimal>(type: "numeric", nullable: true),
+                    ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    TenantId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PropertyOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OrderName = table.Column<string>(type: "text", nullable: false),
+                    TagGroupId = table.Column<int>(type: "integer", nullable: false),
+                    OrderOfIds = table.Column<List<int>>(type: "integer[]", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PropertyOrders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,12 +79,40 @@ namespace Infra.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Username = table.Column<string>(type: "text", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false)
+                    Username = table.Column<string>(type: "text", nullable: true),
+                    Password = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Token = table.Column<string>(type: "text", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedByIp = table.Column<string>(type: "text", nullable: false),
+                    RevokedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RevokedByIp = table.Column<string>(type: "text", nullable: true),
+                    ReplacedByToken = table.Column<string>(type: "text", nullable: true),
+                    IsBlacklisted = table.Column<bool>(type: "boolean", nullable: false),
+                    LinkGuidJwt = table.Column<string>(type: "text", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -163,6 +204,40 @@ namespace Infra.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProductTag",
+                columns: table => new
+                {
+                    ProductsId = table.Column<int>(type: "integer", nullable: false),
+                    TagsId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductTag", x => new { x.ProductsId, x.TagsId });
+                    table.ForeignKey(
+                        name: "FK_ProductTag_Products_ProductsId",
+                        column: x => x.ProductsId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductTag_Tags_TagsId",
+                        column: x => x.TagsId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductTag_TagsId",
+                table: "ProductTag",
+                column: "TagsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_TenantId",
+                table: "RefreshTokens",
+                column: "TenantId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_RoleUser_UsersId",
                 table: "RoleUser",
@@ -188,25 +263,34 @@ namespace Infra.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ProductTag");
+
+            migrationBuilder.DropTable(
+                name: "PropertyOrders");
+
+            migrationBuilder.DropTable(
                 name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "RoleUser");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "TenantUser");
 
             migrationBuilder.DropTable(
-                name: "TenantUser");
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
-                name: "TagGroups");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "TagGroups");
 
             migrationBuilder.DropTable(
                 name: "Tenants");

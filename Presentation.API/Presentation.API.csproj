@@ -27,4 +27,8 @@
       <ProjectReference Include="..\Infra\Infra.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Images\" />
+    </ItemGroup>
+
 </Project>

@@ -76,4 +76,14 @@ public class ProductRepository(
 
         return true;
     }
+
+    public async Task<IEnumerable<Product>> GetProductsByTagIds(IEnumerable<int> tagIds, CancellationToken cancellationToken)
+    {
+        var products = await context.Products
+            .Include(p => p.Tags)
+            .Where(p => p.Tags.Any(t => tagIds.Contains(t.Id)))
+            .ToListAsync(cancellationToken);
+
+        return products;
+    }
 }

@@ -33,7 +33,8 @@ public static class DependencyInjection
             .AddScoped<IProductRepository, ProductRepository>()
             .AddScoped<IUserRepository, UserRepository>()
             .AddScoped<IRoleRepository, RoleRepository>()
-            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            .AddScoped<IRefreshTokenRepository, RefreshTokenRepository>()
+            .AddScoped<IPropertyOrderRepository, PropertyOrderRepository>();
 
         services.AddOptions<JwtConfiguration>()
             .Bind(configuration.GetSection("Jwt"));

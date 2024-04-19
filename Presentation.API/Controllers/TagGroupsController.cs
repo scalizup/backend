@@ -30,7 +30,7 @@ public class TagGroupsController(ISender mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<GetTagGroupById.TagGroupDto>> GetTagGroupById([FromRoute] int id)
     {
-        var tagGroup = await mediator.Send(new GetTagGroupById.Query(id));
+         var tagGroup = await mediator.Send(new GetTagGroupById.Query(id));
 
         return Ok(tagGroup);
     }

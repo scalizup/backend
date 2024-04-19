@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Menu;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infra;
@@ -18,4 +19,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Role> Roles { get; set; } = default!;
 
     public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
+    
+    public DbSet<PropertyOrder> PropertyOrders { get; set; } = default!;
 }

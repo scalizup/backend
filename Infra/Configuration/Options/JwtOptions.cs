@@ -14,7 +14,7 @@ public class JwtOptions(IOptions<JwtConfiguration> jwtConfiguration) : IConfigur
         {
             ValidateIssuer = true,
             ValidateAudience = true,
-            ValidateLifetime = true,
+            ValidateLifetime = false,
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtConfigurationValue.Issuer,
             ValidAudience = jwtConfigurationValue.Audience,
