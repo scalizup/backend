@@ -12,7 +12,7 @@ namespace Presentation.API.Controllers;
 public class TagGroupsController(ISender mediator) : ControllerBase
 {
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<int>> CreateTagGroup([FromBody] CreateTagGroup.Command command)
     {

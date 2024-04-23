@@ -13,7 +13,7 @@ namespace Presentation.API.Controllers;
 public class ProductsController(ISender mediator) : ControllerBase
 {
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<int>> CreateProduct(
         [FromForm] CreateProduct.Command command,

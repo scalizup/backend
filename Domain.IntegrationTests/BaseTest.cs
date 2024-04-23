@@ -14,6 +14,8 @@ public abstract class BaseIntegrationTest
     protected static ITenantRepository TenantRepository => GetService<ITenantRepository>();
     protected static ITagGroupRepository TagGroupRepository => GetService<ITagGroupRepository>();
     protected static ITagRepository TagRepository => GetService<ITagRepository>();
+    protected static IProductRepository ProductRepository => GetService<IProductRepository>();
+    protected static IMenuSortRepository MenuSortRepository => GetService<IMenuSortRepository>();
 
 
     [AssemblyInitialize]
@@ -47,6 +49,8 @@ public abstract class BaseIntegrationTest
         context.Tenants.RemoveRange(context.Tenants);
         context.TagGroups.RemoveRange(context.TagGroups);
         context.Tags.RemoveRange(context.Tags);
+        context.Products.RemoveRange(context.Products);
+        context.MenuSorts.RemoveRange(context.MenuSorts);
 
         await context.SaveChangesAsync();
     }

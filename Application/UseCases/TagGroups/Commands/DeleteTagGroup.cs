@@ -21,7 +21,7 @@ public static class DeleteTagGroup
     {
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
-            var existingTagGroup = await tagGroupRepository.GetTagGroupById(request.Id, cancellationToken);
+            var existingTagGroup = await tagGroupRepository.GetTagGroupById(request.Id, cancellationToken: cancellationToken);
             if (existingTagGroup is null)
             {
                 throw new NotFoundException($"Tag group with id {request.Id} was not found.");
