@@ -1,4 +1,5 @@
-﻿using Application.Repositories;
+﻿using Application.Common.Exceptions;
+using Application.Repositories;
 using Domain.Entities.Menu;
 
 namespace Application.UseCases.MenuSort.Commands;
@@ -22,10 +23,18 @@ public static class CreateMenuSort
         }
     }
 
-    public class Handler(IMenuSortRepository menuSortRepository) : IRequestHandler<Command, int>
+    public class Handler(
+        IMenuSortRepository menuSortRepository,
+        ITagGroupRepository tagGroupRepository) : IRequestHandler<Command, int>
     {
         public async Task<int> Handle(Command request, CancellationToken cancellationToken)
         {
+            var tagGroup = await tagGroupRepository.GetTagGroupById(request.TagGroupId, new() { IncludeTags = true },cancellationToken);
+            if (tagGroup is null)
+            {
+                throw new NotFoundException("Tag group not found");
+            }
+            
             var menuSort = new Domain.Entities.Menu.MenuSort(
                 request.TenantId)
             {

@@ -1,6 +1,7 @@
 ﻿using Application;
 using Application.Repositories;
 using Infra;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +20,7 @@ public abstract class BaseIntegrationTest
 
 
     [AssemblyInitialize]
-    public static void AssemblyInitialize(TestContext testContext)
+    public static async Task AssemblyInitialize(TestContext testContext)
     {
         var currentDirectory = Path.GetDirectoryName(typeof(BaseIntegrationTest).Assembly.Location)!;
 
@@ -33,6 +34,8 @@ public abstract class BaseIntegrationTest
             .AddApplicationServices()
             .AddInfra(configuration)
             .BuildServiceProvider();
+
+        await CleanDatabase();
     }
 
     private static TService GetService<TService>()
@@ -41,17 +44,26 @@ public abstract class BaseIntegrationTest
         return _serviceProvider.GetRequiredService<TService>();
     }
 
-    [TestCleanup]
-    public async Task CleanUp()
+    private static async Task CleanDatabase()
     {
         var context = GetService<AppDbContext>();
 
-        context.Tenants.RemoveRange(context.Tenants);
-        context.TagGroups.RemoveRange(context.TagGroups);
-        context.Tags.RemoveRange(context.Tags);
-        context.Products.RemoveRange(context.Products);
-        context.MenuSorts.RemoveRange(context.MenuSorts);
+        await context.Database.EnsureDeletedAsync(); 
+        await context.Database.EnsureCreatedAsync();
+        // context.Tenants.RemoveRange(context.Tenants);
+        // context.TagGroups.RemoveRange(context.TagGroups);
+        // context.Tags.RemoveRange(context.Tags);
+        // context.Products.RemoveRange(context.Products);
+        // context.MenuSorts.RemoveRange(context.MenuSorts);
+
+
 
         await context.SaveChangesAsync();
+    }
+
+    [TestCleanup]
+    public async Task CleanUp()
+    {
+        await CleanDatabase();
     }
 }

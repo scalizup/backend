@@ -1,5 +1,5 @@
-﻿using Application.UseCases.Menu.Queries;
-using Application.UseCases.MenuSort.Commands;
+﻿using Application.UseCases.MenuSort.Commands;
+using Application.UseCases.MenuSort.Queries;
 using Application.UseCases.Tenants.Commands;
 using Domain.Entities;
 
@@ -8,7 +8,7 @@ namespace Domain.IntegrationTests.UseCases.MenuSort.Commands;
 [TestClass]
 public class CreateMenuSortTest : BaseIntegrationTest
 {
-    private readonly CreateMenuSort.Handler _handler = new(MenuSortRepository);
+    private readonly CreateMenuSort.Handler _handler = new(MenuSortRepository, TagGroupRepository);
 
     [TestMethod]
     public async Task Success()
@@ -68,7 +68,7 @@ public class CreateMenuSortTest : BaseIntegrationTest
         var menuOrders = new List<CreateMenuSort.OrderDto>
         {
             new(2, new[] { 2, 7, 5 }),
-            new(1, new[] { 6, 1, 7 }),
+            new(1, new[] { 6, 1, 10, 9 }),
             new(3, new[] { 4, 8, 3 }),
         };
 
@@ -94,5 +94,27 @@ public class CreateMenuSortTest : BaseIntegrationTest
                 TagRepository,
                 ProductRepository)
             .Handle(menuSort, default);
+        
+        // Expected order
+        // Main Courses
+        // - Coq au Vin
+        // - Beef Wellington
+        // - Seafood Risotto
+        // Appetizers
+        // - Cheese Board
+        // - Margherita Pizza
+        // - Caprese Salad
+        // - Miso Soup
+        // Desserts
+        // - Tiramisu
+        // - Crème Brûlée
+        // - Sushi Platter
+        menuSortResult.Should().NotBeNull();
+        menuSortResult!.TagGroupName.Should().Be("Course Type");
+        menuSortResult.Tags.Should().HaveCount(3);
+        menuSortResult.Tags.Select(t => t.Name).Should().ContainInOrder("Main Courses", "Appetizers", "Desserts");
+        menuSortResult.Tags.First(t => t.Name == "Main Courses").Products.Select(p => p.Name).Should().ContainInOrder("Coq au Vin", "Beef Wellington", "Seafood Risotto");
+        menuSortResult.Tags.First(t => t.Name == "Appetizers").Products.Select(p => p.Name).Should().ContainInOrder("Cheese Board", "Margherita Pizza", "Caprese Salad", "Miso Soup");
+        menuSortResult.Tags.First(t => t.Name == "Desserts").Products.Select(p => p.Name).Should().ContainInOrder("Tiramisu", "Crème Brûlée", "Sushi Platter");
     }
 }

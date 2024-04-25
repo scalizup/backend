@@ -2,9 +2,9 @@
 using Application.Repositories;
 using Domain.Entities;
 
-namespace Application.UseCases.Menu.Queries;
+namespace Application.UseCases.MenuSort.Queries;
 
-public class GetMenuSort 
+public class GetMenuSort
 {
     public record Query : BasePermissionRequest, IRequest<MenuDto>;
 
@@ -21,23 +21,31 @@ public class GetMenuSort
             {
                 throw new NotFoundException("Menu sort not found");
             }
-            
-            var tagGroupWithTags = await tagGroupRepository.GetTagGroupById(
+
+            var tagGroup = await tagGroupRepository.GetTagGroupById(
                 existingMenuSort.TagGroupId,
                 new() { IncludeTags = true },
                 cancellationToken);
-            
-            var products = await productRepository.GetProductsByTagIds(
-                existingMenuSort.ProductsTagOrders.Select(pto => pto.TagId),
+
+            var products = await productRepository.GetProductsByIds(
+                existingMenuSort.ProductsTagOrders.SelectMany(pto => pto.ProductsIds),
                 cancellationToken);
-            
+
             var sortedProducts = SortProductsByCustomOrder(
                 existingMenuSort,
                 products,
-                new[] { tagGroupWithTags },
-                tagGroupWithTags.Tags);
-            
-            return null!;
+                tagGroup!);
+
+            return new MenuDto(
+                tagGroup!.Name,
+                sortedProducts.Keys.Select(tagName => new TagDto(
+                    tagName,
+                    sortedProducts[tagName].Select(p => new ProductDto(
+                        p.Id,
+                        p.Name,
+                        p.Description,
+                        p.Price,
+                        p.ImageUrl)))));
         }
     }
 
@@ -46,41 +54,44 @@ public class GetMenuSort
         IEnumerable<TagDto> Tags);
 
     public record TagDto(
+        string Name,
+        IEnumerable<ProductDto> Products);
+
+    public record ProductDto(
         int Id,
-        string Name);
-    
+        string Name,
+        string? Description,
+        decimal? Price,
+        string? ImageUrl);
+
     public static Dictionary<string, List<Product>> SortProductsByCustomOrder(
         Domain.Entities.Menu.MenuSort menuSort,
         IEnumerable<Product> products,
-        IEnumerable<TagGroup> tagGroups,
-        IEnumerable<Tag> tags)
+        TagGroup tagGroup)
     {
         var sortedProducts = new Dictionary<string, List<Product>>();
 
-        var tagGroup = tagGroups.FirstOrDefault(tg => tg.Id == menuSort.TagGroupId);
-        if (tagGroup != null)
+        foreach (var order in menuSort.ProductsTagOrders)
         {
-            foreach (var order in menuSort.ProductsTagOrders)
+            var tag = tagGroup.Tags.FirstOrDefault(t => t.Id == order.TagId);
+            if (tag != null)
             {
-                var tag = tags.FirstOrDefault(t => t.Id == order.TagId && t.TagGroupId == menuSort.TagGroupId);
-                if (tag != null)
-                {
-                    var productsInTagGroup = products.Where(p => tags.Any(t => t.TagGroupId == tagGroup.Id && p.Tags.Select(p => p.Id).Contains(t.Id))).ToList();
-                    var productsInTag = productsInTagGroup.Where(p => p.Tags.Select(p => p.Id).Contains(tag.Id)).ToList();
+                var productsInTagGroup = products.Where(p => p.TagIds.Contains(tag.Id)).ToList();
+                var productsInTag = productsInTagGroup.Where(p => p.TagIds.Contains(tag.Id)).ToList();
 
-                    if (productsInTag.Count > 0)
+                if (productsInTag.Count > 0)
+                {
+                    var orderedProducts = new List<Product>();
+                    foreach (var productId in order.ProductsIds)
                     {
-                        var orderedProducts = new List<Product>();
-                        foreach (var productId in order.ProductsIds)
+                        var product = productsInTag.FirstOrDefault(p => p.Id == productId);
+                        if (product != null)
                         {
-                            var product = productsInTag.FirstOrDefault(p => p.Id == productId);
-                            if (product != null)
-                            {
-                                orderedProducts.Add(product);
-                            }
+                            orderedProducts.Add(product);
                         }
-                        sortedProducts[tag.Name] = orderedProducts;
                     }
+
+                    sortedProducts[tag.Name] = orderedProducts;
                 }
             }
         }

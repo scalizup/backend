@@ -1,6 +1,6 @@
 ﻿using System.Net.Mime;
-using Application.UseCases.Menu.Queries;
 using Application.UseCases.MenuSort.Commands;
+using Application.UseCases.MenuSort.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.API.Controllers;
