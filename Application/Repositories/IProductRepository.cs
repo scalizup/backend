@@ -17,6 +17,8 @@ public interface IProductRepository
     
     Task<IEnumerable<Product>> GetProductsByIds(IEnumerable<int> productIds, CancellationToken cancellationToken);
     
+    Task<IEnumerable<Product>> GetProductsByTagId(int tagId, CancellationToken cancellationToken);
+    
     Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken);
 
     Task<bool> UpdateProductAsync(Product product, CancellationToken cancellationToken);

@@ -13,7 +13,7 @@ public class MenuSortController(ISender mediator) : ControllerBase
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<bool>> CreateMenuSort([FromBody] CreateMenuSort.Command command)
+    public async Task<ActionResult<bool>> CreateMenuSort([FromBody] UpsertMenuSort.Command command)
     {
         return new ObjectResult(await mediator.Send(command))
         {

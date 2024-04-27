@@ -6,9 +6,10 @@ using Domain.Entities;
 namespace Domain.IntegrationTests.UseCases.MenuSort.Commands;
 
 [TestClass]
-public class CreateMenuSortTest : BaseIntegrationTest
+public class UpsertMenuSortTest : BaseIntegrationTest
 {
-    private readonly CreateMenuSort.Handler _handler = new(MenuSortRepository, TagGroupRepository);
+    private readonly UpsertMenuSort.Handler _handler = new(MenuSortRepository, TagGroupRepository, TagRepository,
+        ProductRepository);
 
     [TestMethod]
     public async Task Success()
@@ -45,7 +46,7 @@ public class CreateMenuSortTest : BaseIntegrationTest
         {
             await TagRepository.CreateTag(tag, default);
         }
-        
+
         var mockProducts = new List<Product>
         {
             new(tenantId, "Margherita Pizza") { Id = 1, TagIds = new List<int> { 1, 4 } },
@@ -59,20 +60,20 @@ public class CreateMenuSortTest : BaseIntegrationTest
             new(tenantId, "Miso Soup") { Id = 9, TagIds = new List<int> { 1, 6 } },
             new(tenantId, "Caprese Salad") { Id = 10, TagIds = new List<int> { 1, 4, 7, 9 } },
         };
-        
+
         foreach (var product in mockProducts)
         {
             await ProductRepository.CreateProductAsync(product, default);
         }
 
-        var menuOrders = new List<CreateMenuSort.OrderDto>
+        var menuOrders = new List<UpsertMenuSort.OrderDto>
         {
-            new(2, new[] { 2, 7, 5 }),
-            new(1, new[] { 6, 1, 10, 9 }),
-            new(3, new[] { 4, 8, 3 }),
+            new(2, new() { 2, 7, 5 }),
+            new(1, new() { 6, 1, 10, 9 }),
+            new(3, new() { 4, 8, 3 }),
         };
 
-        var command = new CreateMenuSort.Command(1, menuOrders)
+        var command = new UpsertMenuSort.Command(1, menuOrders)
         {
             TenantId = tenantId
         };
@@ -87,14 +88,14 @@ public class CreateMenuSortTest : BaseIntegrationTest
         {
             TenantId = tenantId
         };
-        
+
         var menuSortResult = await new GetMenuSort.Handler(
                 MenuSortRepository,
                 TagGroupRepository,
                 TagRepository,
                 ProductRepository)
             .Handle(menuSort, default);
-        
+
         // Expected order
         // Main Courses
         // - Coq au Vin
@@ -113,8 +114,17 @@ public class CreateMenuSortTest : BaseIntegrationTest
         menuSortResult!.TagGroupName.Should().Be("Course Type");
         menuSortResult.Tags.Should().HaveCount(3);
         menuSortResult.Tags.Select(t => t.Name).Should().ContainInOrder("Main Courses", "Appetizers", "Desserts");
-        menuSortResult.Tags.First(t => t.Name == "Main Courses").Products.Select(p => p.Name).Should().ContainInOrder("Coq au Vin", "Beef Wellington", "Seafood Risotto");
-        menuSortResult.Tags.First(t => t.Name == "Appetizers").Products.Select(p => p.Name).Should().ContainInOrder("Cheese Board", "Margherita Pizza", "Caprese Salad", "Miso Soup");
-        menuSortResult.Tags.First(t => t.Name == "Desserts").Products.Select(p => p.Name).Should().ContainInOrder("Tiramisu", "Crème Brûlée", "Sushi Platter");
+        menuSortResult.Tags.First(t => t.Name == "Main Courses").Products.Select(p => p.Name).Should()
+            .ContainInOrder("Coq au Vin", "Beef Wellington", "Seafood Risotto");
+        menuSortResult.Tags.First(t => t.Name == "Appetizers").Products.Select(p => p.Name).Should()
+            .ContainInOrder("Cheese Board", "Margherita Pizza", "Caprese Salad", "Miso Soup");
+        menuSortResult.Tags.First(t => t.Name == "Desserts").Products.Select(p => p.Name).Should()
+            .ContainInOrder("Tiramisu", "Crème Brûlée", "Sushi Platter");
+    }
+
+    [TestMethod]
+    public async Task AddNewTagWithoutRecreatingTheMenuSort()
+    {
+        
     }
 }
