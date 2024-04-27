@@ -51,6 +51,15 @@ public class ProductRepository(
             products);
     }
 
+    public async Task<IEnumerable<Product>> GetProductsByIds(IEnumerable<int> productIds, CancellationToken cancellationToken)
+    {
+        var products = await context.Products
+            .Where(p => productIds.Contains(p.Id))
+            .ToListAsync(cancellationToken);
+        
+        return products;
+    }
+
     public async Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken)
     {
         var product = await context.Products
@@ -80,8 +89,7 @@ public class ProductRepository(
     public async Task<IEnumerable<Product>> GetProductsByTagIds(IEnumerable<int> tagIds, CancellationToken cancellationToken)
     {
         var products = await context.Products
-            .Include(p => p.Tags)
-            .Where(p => p.Tags.Any(t => tagIds.Contains(t.Id)))
+            .Where(p => p.TagIds.Any(t => tagIds.Contains(t)))            
             .ToListAsync(cancellationToken);
 
         return products;

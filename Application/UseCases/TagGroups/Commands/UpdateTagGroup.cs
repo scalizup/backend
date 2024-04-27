@@ -27,7 +27,9 @@ public static class UpdateTagGroup
     {
         public async Task<bool> Handle(Command request, CancellationToken cancellationToken)
         {
-            var tagGroup = await tagGroupRepository.GetTagGroupById(request.Id, cancellationToken);
+            var tagGroup = await tagGroupRepository.GetTagGroupById(
+                request.Id,
+                cancellationToken: cancellationToken);
             if (tagGroup is null)
             {
                 throw new NotFoundException($"Tag group with id {request.Id} was not found.");

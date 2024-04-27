@@ -11,7 +11,7 @@ namespace Presentation.API.Controllers;
 public class UsersController(ISender mediator) : ControllerBase
 {
     [HttpPost("register")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> RegisterUser([FromBody] RegisterUser.Command command)
     {
@@ -22,7 +22,7 @@ public class UsersController(ISender mediator) : ControllerBase
     }
 
     [HttpPost("login")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LoginUser.Dto>> LoginUser([FromBody] LoginUser.Command command)
     {
@@ -30,7 +30,7 @@ public class UsersController(ISender mediator) : ControllerBase
     }
 
     [HttpPost("logout")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult> LogoutUser()
     {
@@ -40,7 +40,7 @@ public class UsersController(ISender mediator) : ControllerBase
     }
 
     [HttpPost("refresh")]
-    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(int))]
+    
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<LoginUser.Dto>> RefreshToken([FromBody] RefreshUserToken.Command command)
     {

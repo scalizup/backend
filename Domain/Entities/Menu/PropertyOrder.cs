@@ -2,12 +2,17 @@
 
 namespace Domain.Entities.Menu;
 
-public class PropertyOrder(
-    int tenantId,
-    int tagGroupId,
-    List<int> orderOfIds) : TenantAware(tenantId)
+public class MenuSort(
+    int tenantId) : TenantAware(tenantId)
 {
-    public int TagGroupId { get; set; } = tagGroupId;
+    public int TagGroupId { get; set; }
 
-    public List<int> OrderOfIds { get; set; } = orderOfIds;
+    public ICollection<ProductsTagOrder> ProductsTagOrders { get; set; } = [];
+}
+
+public class ProductsTagOrder : BaseEntity
+{
+    public int TagId { get; set; }
+    
+    public ICollection<int> ProductsIds { get; set; } = [];
 }

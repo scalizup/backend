@@ -23,17 +23,13 @@ namespace Infra.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.Menu.PropertyOrder", b =>
+            modelBuilder.Entity("Domain.Entities.Menu.MenuSort", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<List<int>>("OrderOfIds")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
 
                     b.Property<int>("TagGroupId")
                         .HasColumnType("integer");
@@ -43,7 +39,32 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PropertyOrders");
+                    b.ToTable("MenuSorts");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Menu.ProductsTagOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("MenuSortId")
+                        .HasColumnType("integer");
+
+                    b.Property<int[]>("ProductsIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuSortId");
+
+                    b.ToTable("ProductsTagOrder");
                 });
 
             modelBuilder.Entity("Domain.Entities.Product", b =>
@@ -66,6 +87,10 @@ namespace Infra.Migrations
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
+
+                    b.Property<List<int>>("TagIds")
+                        .IsRequired()
+                        .HasColumnType("integer[]");
 
                     b.Property<int>("TenantId")
                         .HasColumnType("integer");
@@ -271,6 +296,13 @@ namespace Infra.Migrations
                     b.ToTable("TenantUser");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Menu.ProductsTagOrder", b =>
+                {
+                    b.HasOne("Domain.Entities.Menu.MenuSort", null)
+                        .WithMany("ProductsTagOrders")
+                        .HasForeignKey("MenuSortId");
+                });
+
             modelBuilder.Entity("Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("Domain.Entities.Tenant", "Tenant")
@@ -345,6 +377,11 @@ namespace Infra.Migrations
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Menu.MenuSort", b =>
+                {
+                    b.Navigation("ProductsTagOrders");
                 });
 
             modelBuilder.Entity("Domain.Entities.TagGroup", b =>

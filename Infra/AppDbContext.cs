@@ -20,5 +20,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     public DbSet<RefreshToken> RefreshTokens { get; set; } = default!;
     
-    public DbSet<PropertyOrder> PropertyOrders { get; set; } = default!;
+    public DbSet<MenuSort> MenuSorts { get; set; } = default!;
 }

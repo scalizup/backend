@@ -15,7 +15,7 @@ public static class GetTagGroupById
                 .GreaterThan(0)
                 .MustAsync(async (tagGroupId, cancellationToken) =>
                 {
-                    var tagGroup = await tagGroupRepository.GetTagGroupById(tagGroupId, cancellationToken);
+                    var tagGroup = await tagGroupRepository.GetTagGroupById(tagGroupId, cancellationToken: cancellationToken);
 
                     return tagGroup is not null;
                 })
@@ -32,7 +32,7 @@ public static class GetTagGroupById
         {
             var tagGroup = await tagGroupRepository.GetTagGroupById(
                 request.TagGroupId,
-                cancellationToken);
+                cancellationToken: cancellationToken);
 
             return new TagGroupDto(tagGroup!.Id, tagGroup.Name);
         }

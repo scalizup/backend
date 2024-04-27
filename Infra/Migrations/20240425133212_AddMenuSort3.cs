@@ -8,11 +8,25 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infra.Migrations
 {
     /// <inheritdoc />
-    public partial class OrderMenus : Migration
+    public partial class AddMenuSort3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "MenuSorts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TagGroupId = table.Column<int>(type: "integer", nullable: false),
+                    TenantId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MenuSorts", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Products",
                 columns: table => new
@@ -23,27 +37,12 @@ namespace Infra.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Price = table.Column<decimal>(type: "numeric", nullable: true),
                     ImageUrl = table.Column<string>(type: "text", nullable: true),
+                    TagIds = table.Column<List<int>>(type: "integer[]", nullable: false),
                     TenantId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PropertyOrders",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OrderName = table.Column<string>(type: "text", nullable: false),
-                    TagGroupId = table.Column<int>(type: "integer", nullable: false),
-                    OrderOfIds = table.Column<List<int>>(type: "integer[]", nullable: false),
-                    TenantId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PropertyOrders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -85,6 +84,26 @@ namespace Infra.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductsTagOrder",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TagId = table.Column<int>(type: "integer", nullable: false),
+                    ProductsIds = table.Column<int[]>(type: "integer[]", nullable: false),
+                    MenuSortId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductsTagOrder", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductsTagOrder_MenuSorts_MenuSortId",
+                        column: x => x.MenuSortId,
+                        principalTable: "MenuSorts",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -234,6 +253,11 @@ namespace Infra.Migrations
                 column: "TagsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProductsTagOrder_MenuSortId",
+                table: "ProductsTagOrder",
+                column: "MenuSortId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RefreshTokens_TenantId",
                 table: "RefreshTokens",
                 column: "TenantId");
@@ -266,7 +290,7 @@ namespace Infra.Migrations
                 name: "ProductTag");
 
             migrationBuilder.DropTable(
-                name: "PropertyOrders");
+                name: "ProductsTagOrder");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");
@@ -282,6 +306,9 @@ namespace Infra.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "MenuSorts");
 
             migrationBuilder.DropTable(
                 name: "Roles");

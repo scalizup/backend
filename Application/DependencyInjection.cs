@@ -13,7 +13,7 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-            cfg.AddOpenRequestPreProcessor(typeof(AuthorizationRequestPreProcessor<>));
+            // cfg.AddOpenRequestPreProcessor(typeof(AuthorizationRequestPreProcessor<>));
             cfg.AddOpenRequestPreProcessor(typeof(ValidationRequestPreProcessor<>));
         });
 

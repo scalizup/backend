@@ -1,4 +1,5 @@
-﻿using Application.Models;
+﻿using System.Collections;
+using Application.Models;
 using Domain.Entities;
 
 namespace Application.Repositories;
@@ -13,6 +14,10 @@ public interface IProductRepository
         int tenantId,
         PageQuery pageQuery,
         CancellationToken cancellationToken);
+    
+    Task<IEnumerable<Product>> GetProductsByIds(IEnumerable<int> productIds, CancellationToken cancellationToken);
+    
+    Task<IEnumerable<Product>> GetProductsByTagId(int tagId, CancellationToken cancellationToken);
     
     Task<bool> DeleteProductAsync(int id, CancellationToken cancellationToken);
 

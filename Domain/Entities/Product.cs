@@ -14,5 +14,7 @@ public class Product(
 
     public string? ImageUrl { get; set; }
 
-    public required List<Tag> Tags { get; set; }
+    public List<Tag> Tags { get; set; }
+
+    public List<int> TagIds { get; set;  }
 }
